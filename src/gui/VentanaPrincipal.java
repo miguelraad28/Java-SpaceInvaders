@@ -35,6 +35,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void construirEventos() {
+        
     }
 
     private JMenuBar construirMenuBar() {
