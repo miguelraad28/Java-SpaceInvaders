@@ -6,10 +6,19 @@ package gui;
 
 import javax.swing.JFrame;
 
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
+import controlador.Controlador;
+import modelo.Dificultad;
+
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
 
 /**
  *
@@ -17,41 +26,156 @@ import javax.swing.JMenuItem;
  */
 public class VentanaPrincipal extends JFrame {
 
+    private Controlador controlador;
+    private Container contenedor;
+    private PanelJuego panelJuego;
+
+    private JButton btnIniciarCadete, btnIniciarGuerrero, btnIniciarMaestro, btnVerRanking;
+
+    private final int ancho = 800;
+    private final int alto = 600;
+
     public VentanaPrincipal() {
+        this.controlador = new Controlador(this);
+
+        this.setTitle("Space Invaders - POO");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.setSize(ancho, alto);
+        this.setResizable(false);
+
         construirVentana();
         construirEventos();
+
+        this.setVisible(true);
+    }
+
+    public int getAncho() {
+        return this.ancho;
+    }
+
+    public int getAlto() {
+        return this.alto;
     }
 
     private void construirVentana() {
-        this.setTitle("Space Invaders - POO");
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setSize(800, 600);
-        this.setResizable(false);
-        this.setVisible(true);
+        contenedor = this.getContentPane();
 
-        JMenuBar menuBar = construirMenuBar();
+        // Crear los botones una sola vez
+        btnIniciarCadete = new JButton("Cadete");
+        btnIniciarGuerrero = new JButton("Guerrero");
+        btnIniciarMaestro = new JButton("Maestro");
+        btnVerRanking = new JButton("Ver Ranking");
 
-        this.setJMenuBar(menuBar);
+        mostrarPanelInicial();
     }
 
     private void construirEventos() {
+        ManejoBotonIniciar mbi = new ManejoBotonIniciar();
+
+        btnIniciarCadete.addActionListener(mbi);
+        btnIniciarGuerrero.addActionListener(mbi);
+        btnIniciarMaestro.addActionListener(mbi);
+
+        ManejoBotonRanking mbr = new ManejoBotonRanking();
+
+        btnVerRanking.addActionListener(mbr);
     }
 
-    private JMenuBar construirMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
+    public void mostrarPanelInicial() {
+        // Limpiar el contenedor
+        contenedor.removeAll();
 
-        JMenu menuJuego = new JMenu("Juego");
-        JMenuItem nuevoJuego = new JMenuItem("Nuevo Juego");
-        //menuJuego.addActionListener(null);
-        menuJuego.add(nuevoJuego);
+        contenedor.setLayout(new GridLayout(4, 1));
 
-        menuBar.add(menuJuego);
-        // Add oter menus.
-        /*menuBar.add(menuJuego);
-        menuBar.add(menuJuego);
-        menuBar.add(menuJuego);*/
+        JLabel lblTitulo = new JLabel("Space Invaders", JLabel.CENTER);
+        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + controlador.obtenerCreditos(),
+                JLabel.CENTER);
+        JPanel pnlDificultades = new JPanel();
 
-        return menuBar;
+        // Ya no recreamos los botones, solo los reutilizamos
+        pnlDificultades.setLayout(new GridLayout(4, 1));
+
+        pnlDificultades.add(new JLabel("Seleccione la dificultad para iniciar:"));
+        pnlDificultades.add(btnIniciarCadete);
+        pnlDificultades.add(btnIniciarGuerrero);
+        pnlDificultades.add(btnIniciarMaestro);
+
+        contenedor.add(lblTitulo);
+        contenedor.add(lblCreditosDisponibles);
+        contenedor.add(pnlDificultades);
+        contenedor.add(btnVerRanking);
+
+        // Actualizar la ventana
+        contenedor.revalidate();
+        contenedor.repaint();
     }
 
+    public void mostrarPanelJuego() {
+        contenedor.removeAll();
+
+        panelJuego = new PanelJuego(this, controlador);
+
+        contenedor.setLayout(new BorderLayout());
+        contenedor.add(panelJuego, BorderLayout.CENTER);
+
+        // Actualizar la ventana
+        contenedor.revalidate();
+        contenedor.repaint();
+
+        // Dar foco al panel de juego para capturar las teclas
+        panelJuego.requestFocusInWindow();
+    }
+
+    public void mostrarPanelRanking() {
+        contenedor.removeAll();
+
+        PanelRanking panelRanking = new PanelRanking(this, controlador);
+        contenedor.setLayout(new BorderLayout());
+        contenedor.add(panelRanking, BorderLayout.CENTER);
+
+        // Actualizar la ventana
+        contenedor.revalidate();
+        contenedor.repaint();
+
+        // Dar foco al panel de juego para capturar las teclas
+        panelRanking.requestFocusInWindow();
+    }
+
+    public void actualizarPanelJuego() {
+        if (panelJuego != null) {
+            panelJuego.repaint();
+        }
+    }
+
+    public void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje);
+    }
+
+    public class ManejoBotonIniciar implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton boton = (JButton) e.getSource();
+
+            String dificultad = boton.getText();
+
+            switch (dificultad) {
+                case "Cadete":
+                    controlador.iniciarJuego(Dificultad.CADETE);
+                    break;
+                case "Guerrero":
+                    controlador.iniciarJuego(Dificultad.GUERRERO);
+                    break;
+                case "Maestro":
+                    controlador.iniciarJuego(Dificultad.MAESTRO);
+                    break;
+            }
+        }
+    }
+
+    public class ManejoBotonRanking implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            VentanaPrincipal.this.mostrarPanelRanking();
+        }
+    }
 }

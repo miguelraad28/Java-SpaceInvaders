@@ -9,5 +9,21 @@ package modelo;
  * @author Dell
  */
 public class GestorCreditos {
-    
+    private int creditosCargados = 0;
+
+    public GestorCreditos() {
+
+    }
+
+    public int obtenerSaldo() {
+        return this.creditosCargados;
+    }
+
+    public boolean puedeIniciarJuego() {
+        return this.obtenerSaldo() > 0;
+    }
+
+    public void consumirParaNuevoJuego() {
+        this.creditosCargados--;
+    }
 }
