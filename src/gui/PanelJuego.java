@@ -29,7 +29,7 @@ public class PanelJuego extends JPanel {
 
         imagenNave = new ImagenNave();
 
-        imagenNave.moverX(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 200);
+        imagenNave.moverX(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
 
         this.add(imagenNave);
 
@@ -41,8 +41,6 @@ public class PanelJuego extends JPanel {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                System.out.println("Key pressed: " + e.getKeyCode());
-                
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == 37) { // Flecha izquierda
                     nuevoXNave = controladorJuego.moverNaveIzquierda();
                     imagenNave.moverX(nuevoXNave, imagenNave.getY());

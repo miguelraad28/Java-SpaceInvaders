@@ -20,12 +20,22 @@ import modelo.Ranking;
  * @author Dell
  */
 public class ControladorJuego {
+
+    private static ControladorJuego instancia;
+
     private Nave nave;
     private Area areaJuego;
 
-    public ControladorJuego(Area areaJuego) {
+    private ControladorJuego(Area areaJuego) {
         this.areaJuego = areaJuego;
-        this.nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 200, 10, 50, 50, areaJuego);
+        this.nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego);
+    }
+
+    public static ControladorJuego getInstancia(Area areaJuego) {
+        if (instancia == null) {
+            instancia = new ControladorJuego(areaJuego);
+        }
+        return instancia;
     }
 
     public int moverNaveIzquierda() {
