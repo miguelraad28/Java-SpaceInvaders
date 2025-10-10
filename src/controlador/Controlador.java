@@ -54,7 +54,7 @@ public class Controlador {
                 // Actualizar modelo
                 juego.actualizar();
                 // Actualizar vista
-                ventanaPrincipal.actualizarPanelJuego();
+                // ventanaPrincipal.actualizarPanelJuego();
             } else {
                 // Juego terminó
                 detenerGameLoop();

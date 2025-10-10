@@ -111,19 +111,15 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarPanelJuego() {
-        contenedor.removeAll();
+        // contenedor.removeAll();
 
-        panelJuego = new PanelJuego(this, controlador);
+        panelJuego = new PanelJuego(this);
+        this.setContentPane(panelJuego);
+        // contenedor.setLayout(new BorderLayout());
+        // contenedor.add(panelJuego);
 
-        contenedor.setLayout(new BorderLayout());
-        contenedor.add(panelJuego, BorderLayout.CENTER);
-
-        // Actualizar la ventana
-        contenedor.revalidate();
-        contenedor.repaint();
-
-        // Dar foco al panel de juego para capturar las teclas
-        panelJuego.requestFocusInWindow();
+        this.revalidate();
+        this.repaint();
     }
 
     public void mostrarPanelRanking() {
@@ -136,15 +132,8 @@ public class VentanaPrincipal extends JFrame {
         // Actualizar la ventana
         contenedor.revalidate();
         contenedor.repaint();
-
         // Dar foco al panel de juego para capturar las teclas
         panelRanking.requestFocusInWindow();
-    }
-
-    public void actualizarPanelJuego() {
-        if (panelJuego != null) {
-            panelJuego.repaint();
-        }
     }
 
     public void mostrarMensaje(String mensaje) {

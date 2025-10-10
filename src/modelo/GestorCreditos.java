@@ -9,7 +9,7 @@ package modelo;
  * @author Dell
  */
 public class GestorCreditos {
-    private int creditosCargados = 0;
+    private int creditosCargados = 1;
 
     public GestorCreditos() {
 

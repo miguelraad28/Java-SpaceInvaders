@@ -2,64 +2,58 @@ package gui;
 
 import javax.swing.JPanel;
 
-import controlador.Controlador;
+import controlador.ControladorJuego;
+import modelo.Area;
+import modelo.Proyectil;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class PanelJuego extends JPanel {
     private VentanaPrincipal ventanaPrincipal;
-    private Controlador controlador;
+    private ControladorJuego controladorJuego;
+    private ImagenNave imagenNave;
+    private Area areaJuego;
 
-    public PanelJuego(VentanaPrincipal ventanaPrincipal, Controlador controlador) {
+    public PanelJuego(VentanaPrincipal ventanaPrincipal) {
         this.ventanaPrincipal = ventanaPrincipal;
-        this.controlador = controlador;
-        construirPanel();
-        construirEventos();
-    }
 
-    private void construirPanel() {
-        this.setLayout(new BorderLayout());
-        this.setBackground(Color.BLACK);
+        this.setLayout(null);
+        this.setPreferredSize(new Dimension(ventanaPrincipal.getAncho(), ventanaPrincipal.getAlto()));
 
-        this.setFocusable(true);
-        this.requestFocusInWindow();
-    }
+        areaJuego = new Area(ventanaPrincipal.getAncho(), ventanaPrincipal.getAlto());
 
-    private void construirEventos() {
+        imagenNave = new ImagenNave();
 
-        ManejoTeclasDeJuego mtj = new ManejoTeclasDeJuego();
+        imagenNave.moverX(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 200);
 
-        this.addKeyListener(mtj);
-    }
+        this.add(imagenNave);
 
-    public class ManejoTeclasDeJuego implements KeyListener {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            int key = e.getKeyCode();
-            switch (key) {
-                case java.awt.event.KeyEvent.VK_LEFT:
-                    controlador.moverNaveIzq();
-                    break;
-                case java.awt.event.KeyEvent.VK_RIGHT:
-                    controlador.moverNaveDer();
-                    break;
-                case java.awt.event.KeyEvent.VK_SPACE:
-                    controlador.disparar();
-                    break;
-                case java.awt.event.KeyEvent.VK_ESCAPE:
-                    ventanaPrincipal.mostrarPanelInicial();
+        controladorJuego = new ControladorJuego(areaJuego);
+
+        imagenNave.setFocusable(true);
+        imagenNave.addKeyListener(new KeyAdapter() {
+            int nuevoXNave;
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                System.out.println("Key pressed: " + e.getKeyCode());
+                
+                if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == 37) { // Flecha izquierda
+                    nuevoXNave = controladorJuego.moverNaveIzquierda();
+                    imagenNave.moverX(nuevoXNave, imagenNave.getY());
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == 39) { // Flecha derecha
+                    nuevoXNave = controladorJuego.moverNaveDerecha();
+                    imagenNave.moverX(nuevoXNave, imagenNave.getY());
+                } else if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == 32) { // Espacio
+                    Proyectil proyectil = controladorJuego.disparar();
+                    // TODO: ControladorProyectiles.agregarProyectil(proyectil);
+                }
             }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-        }
-
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
+        });
     }
 }
