@@ -3,6 +3,7 @@ package gui;
 import javax.swing.JPanel;
 
 import controlador.ControladorJuego;
+import controlador.ControladorProyectiles;
 import modelo.Area;
 import modelo.Proyectil;
 
@@ -12,12 +13,24 @@ import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.Timer;
 
 public class PanelJuego extends JPanel {
     private VentanaPrincipal ventanaPrincipal;
     private ControladorJuego controladorJuego;
-    private ImagenNave imagenNave;
+
+    private boolean needsRepaint = false;
+
     private Area areaJuego;
+
+    private ImagenNave imagenNave;
+    private List<UIProyectil> uiProyectiles;
+
+    private Timer timer;
 
     public PanelJuego(VentanaPrincipal ventanaPrincipal) {
         this.ventanaPrincipal = ventanaPrincipal;
@@ -28,12 +41,10 @@ public class PanelJuego extends JPanel {
         areaJuego = new Area(ventanaPrincipal.getAncho(), ventanaPrincipal.getAlto());
 
         imagenNave = new ImagenNave();
-
-        imagenNave.moverX(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
+        imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
+        uiProyectiles = new ArrayList<>();
 
         this.add(imagenNave);
-
-        controladorJuego = new ControladorJuego(areaJuego);
 
         imagenNave.setFocusable(true);
         imagenNave.addKeyListener(new KeyAdapter() {
@@ -42,16 +53,72 @@ public class PanelJuego extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == 37) { // Flecha izquierda
-                    nuevoXNave = controladorJuego.moverNaveIzquierda();
-                    imagenNave.moverX(nuevoXNave, imagenNave.getY());
+                    nuevoXNave = ControladorJuego.getInstancia(areaJuego).moverNaveIzquierda();
+                    imagenNave.mover(nuevoXNave, imagenNave.getY());
                 } else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == 39) { // Flecha derecha
-                    nuevoXNave = controladorJuego.moverNaveDerecha();
-                    imagenNave.moverX(nuevoXNave, imagenNave.getY());
+                    nuevoXNave = ControladorJuego.getInstancia(areaJuego).moverNaveDerecha();
+                    imagenNave.mover(nuevoXNave, imagenNave.getY());
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == 32) { // Espacio
-                    Proyectil proyectil = controladorJuego.disparar();
-                    // TODO: ControladorProyectiles.agregarProyectil(proyectil);
+                    Proyectil proyectil = ControladorJuego.getInstancia(areaJuego).disparar();
+                    if (proyectil != null) {
+                        ControladorProyectiles.getInstancia(areaJuego).agregarProyectil(proyectil);
+                        UIProyectil uiProyectil = new UIProyectil(true);
+                        System.out.println("Proyectil: " + proyectil.getX() + " " + proyectil.getY());
+                        uiProyectil.mover(proyectil.getX(), proyectil.getY());
+                        uiProyectiles.add(uiProyectil);
+                        add(uiProyectil);
+                    }
                 }
             }
         });
+
+        iniciarCicloJuego();
+    }
+
+    private void iniciarCicloJuego() {
+        timer = new Timer(30, _ -> {
+            System.out.println("Ciclo de juego");
+            actualizarProyectiles();
+            actualizarInvasores();
+            
+            if(needsRepaint) {
+                revalidate();
+                repaint();
+                needsRepaint = false;
+            }
+        });
+        timer.start();
+    }
+
+    private void detenerCicloJuego() {
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
+    }
+
+    private void actualizarProyectiles() {
+        Map<Integer, Proyectil> proyectilesMap = ControladorProyectiles.getInstancia(areaJuego).moverProyectiles();
+        // Iterar hacia atrás para poder eliminar elementos de forma segura
+        for (int i = uiProyectiles.size() - 1; i >= 0; i--) {
+            UIProyectil uiProyectil = uiProyectiles.get(i);
+            System.out.println("Mover UIProyectil: " + uiProyectil.getProyectilID());
+            Proyectil proyectil = proyectilesMap.get(uiProyectil.getProyectilID());
+            // No se destruyó el proyectil
+            if (proyectil != null) {
+                uiProyectil.mover(proyectil.getX(), proyectil.getY());
+                System.out.println("Mover UIProyectil: " + uiProyectil.getX() + " " + uiProyectil.getY());
+            } else {
+                // El obj. de negocio ya no existe, lo eliminamos de la UI
+                System.out.println("Salió del mapa");
+                uiProyectiles.remove(i);
+                remove(uiProyectil);
+                needsRepaint = true;
+            }
+        }
+    }
+
+    public void actualizarInvasores() {
+
     }
 }

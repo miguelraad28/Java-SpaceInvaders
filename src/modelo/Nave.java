@@ -43,6 +43,6 @@ public class Nave {
     }
 
     public Proyectil intentarDisparo() {
-        return null;
+        return new Proyectil(this.x + this.ancho / 2, this.y, 4, true);
     }
 }

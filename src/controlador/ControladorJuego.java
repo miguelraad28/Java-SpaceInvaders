@@ -34,7 +34,7 @@ public class ControladorJuego {
     public static ControladorJuego getInstancia(Area areaJuego) {
         if (instancia == null) {
             instancia = new ControladorJuego(areaJuego);
-        }
+        } 
         return instancia;
     }
 
