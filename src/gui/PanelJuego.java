@@ -1,26 +1,19 @@
 package gui;
 
-import javax.swing.JPanel;
-
 import controlador.ControladorJuego;
 import controlador.ControladorProyectiles;
-import modelo.Area;
-import modelo.Proyectil;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import javax.swing.JPanel;
 import javax.swing.Timer;
+import modelo.Area;
+import modelo.Proyectil;
 
 public class PanelJuego extends JPanel {
-    private VentanaPrincipal ventanaPrincipal;
     private ControladorJuego controladorJuego;
 
     private boolean needsRepaint = false;
@@ -32,13 +25,11 @@ public class PanelJuego extends JPanel {
 
     private Timer timer;
 
-    public PanelJuego(VentanaPrincipal ventanaPrincipal) {
-        this.ventanaPrincipal = ventanaPrincipal;
-
+    public PanelJuego(int ancho, int alto) {
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(ventanaPrincipal.getAncho(), ventanaPrincipal.getAlto()));
+        this.setPreferredSize(new Dimension(ancho, alto));
 
-        areaJuego = new Area(ventanaPrincipal.getAncho(), ventanaPrincipal.getAlto());
+        areaJuego = new Area(ancho, alto);
 
         imagenNave = new ImagenNave();
         imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
@@ -76,7 +67,7 @@ public class PanelJuego extends JPanel {
     }
 
     private void iniciarCicloJuego() {
-        timer = new Timer(30, _ -> {
+        timer = new Timer(30, e -> {
             System.out.println("Ciclo de juego");
             actualizarProyectiles();
             actualizarInvasores();
@@ -120,5 +111,9 @@ public class PanelJuego extends JPanel {
 
     public void actualizarInvasores() {
 
+    }
+    
+    public void solicitarFocoNave() {
+        imagenNave.requestFocusInWindow();
     }
 }

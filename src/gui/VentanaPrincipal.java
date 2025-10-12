@@ -4,21 +4,18 @@
  */
 package gui;
 
-import javax.swing.JFrame;
-
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-
 import controlador.Controlador;
-import modelo.Dificultad;
-
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.BorderLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import modelo.Dificultad;
 
 /**
  *
@@ -111,15 +108,13 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarPanelJuego() {
-        // contenedor.removeAll();
-
-        panelJuego = new PanelJuego(this);
+        panelJuego = new PanelJuego(this.ancho, this.alto);
         this.setContentPane(panelJuego);
-        // contenedor.setLayout(new BorderLayout());
-        // contenedor.add(panelJuego);
 
         this.revalidate();
         this.repaint();
+        
+        panelJuego.solicitarFocoNave();
     }
 
     public void mostrarPanelRanking() {

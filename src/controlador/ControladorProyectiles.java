@@ -37,26 +37,33 @@ public class ControladorProyectiles {
             Proyectil proyectil = proyectiles.get(i);
             proyectil.moverY();
 
-            proyectilesMap.put(proyectil.getProyectilID(), proyectil);
+            boolean estaEnLimites = proyectil.estoyEnLimites(areaJuego);
 
-            this.evaluarColision(proyectil);
+            if(!estaEnLimites){
+                this.eliminarProyectil(proyectil);
+            }else{
+                boolean hayColision = this.hayColision(proyectil);
+                // Verificar que no haya colisionado o salido del mapa.
+                if(!hayColision){
+                    proyectilesMap.put(proyectil.getProyectilID(), proyectil);
+                } else {
+                    this.eliminarProyectil(proyectil);
+                }
+            }
+            
         }
 
         return proyectilesMap;
     }
 
-    private void evaluarColision(Proyectil proyectil) {
-        if (proyectil.getY() < 0 || proyectil.getY() > areaJuego.getAlto()) {
-            this.eliminarProyectil(proyectil);
-        }
-
+    private boolean hayColision(Proyectil proyectil) {
         if (proyectil.esDelJugador()) {
-
+            // Ver si hay muro o invasor
+            return false;
         } else {
-
-            this.eliminarProyectil(proyectil);
+            // Ver si hay muro o nave
+            return false;
         }
-
     }
 
     private void eliminarProyectil(Proyectil p) {
