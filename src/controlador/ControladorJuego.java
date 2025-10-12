@@ -28,7 +28,8 @@ public class ControladorJuego {
 
     private ControladorJuego(Area areaJuego) {
         this.areaJuego = areaJuego;
-        this.nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego);
+        this.nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego, 1);
+
     }
 
     public static ControladorJuego getInstancia(Area areaJuego) {
