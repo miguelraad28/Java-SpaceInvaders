@@ -4,7 +4,8 @@
  */
 package gui;
 
-import controlador.Controlador;
+import controlador.ControladorCreditos;
+import controlador.ControladorJuego;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -15,17 +16,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import modelo.Area;
 import modelo.Dificultad;
-
 /**
  *
  * @author Dell
  */
 public class VentanaPrincipal extends JFrame {
 
-    private Controlador controlador;
     private Container contenedor;
     private PanelJuego panelJuego;
+    private Area areaJuego;
 
     private JButton btnIniciarCadete, btnIniciarGuerrero, btnIniciarMaestro, btnVerRanking;
 
@@ -33,12 +34,11 @@ public class VentanaPrincipal extends JFrame {
     private final int alto = 600;
 
     public VentanaPrincipal() {
-        this.controlador = new Controlador(this);
-
         this.setTitle("Space Invaders - POO");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(ancho, alto);
         this.setResizable(false);
+
 
         construirVentana();
         construirEventos();
@@ -46,17 +46,10 @@ public class VentanaPrincipal extends JFrame {
         this.setVisible(true);
     }
 
-    public int getAncho() {
-        return this.ancho;
-    }
-
-    public int getAlto() {
-        return this.alto;
-    }
-
     private void construirVentana() {
         contenedor = this.getContentPane();
 
+        areaJuego = new Area(ancho, alto);
         // Crear los botones una sola vez
         btnIniciarCadete = new JButton("Cadete");
         btnIniciarGuerrero = new JButton("Guerrero");
@@ -85,7 +78,7 @@ public class VentanaPrincipal extends JFrame {
         contenedor.setLayout(new GridLayout(4, 1));
 
         JLabel lblTitulo = new JLabel("Space Invaders", JLabel.CENTER);
-        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + controlador.obtenerCreditos(),
+        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + ControladorCreditos.getInstancia().obtenerSaldo(),
                 JLabel.CENTER);
         JPanel pnlDificultades = new JPanel();
 
@@ -107,8 +100,9 @@ public class VentanaPrincipal extends JFrame {
         contenedor.repaint();
     }
 
-    public void mostrarPanelJuego() {
-        panelJuego = new PanelJuego(this.ancho, this.alto);
+    public void mostrarPanelJuego(Dificultad dificultad) {        
+        panelJuego = new PanelJuego(dificultad, areaJuego);
+
         this.setContentPane(panelJuego);
 
         this.revalidate();
@@ -120,7 +114,7 @@ public class VentanaPrincipal extends JFrame {
     public void mostrarPanelRanking() {
         contenedor.removeAll();
 
-        PanelRanking panelRanking = new PanelRanking(this, controlador);
+        PanelRanking panelRanking = new PanelRanking(this);
         contenedor.setLayout(new BorderLayout());
         contenedor.add(panelRanking, BorderLayout.CENTER);
 
@@ -135,22 +129,27 @@ public class VentanaPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, mensaje);
     }
 
+    private void iniciarJuego(Dificultad dificultad) {
+        ControladorJuego.getInstancia(areaJuego).iniciarJuego(dificultad);
+        mostrarPanelJuego(dificultad);
+    }
+
     public class ManejoBotonIniciar implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton boton = (JButton) e.getSource();
 
             String dificultad = boton.getText();
-
+            
             switch (dificultad) {
                 case "Cadete":
-                    controlador.iniciarJuego(Dificultad.CADETE);
+                    iniciarJuego(Dificultad.CADETE);
                     break;
                 case "Guerrero":
-                    controlador.iniciarJuego(Dificultad.GUERRERO);
+                    iniciarJuego(Dificultad.GUERRERO);
                     break;
                 case "Maestro":
-                    controlador.iniciarJuego(Dificultad.MAESTRO);
+                    iniciarJuego(Dificultad.MAESTRO);
                     break;
             }
         }

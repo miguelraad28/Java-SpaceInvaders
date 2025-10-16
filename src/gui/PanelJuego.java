@@ -11,26 +11,25 @@ import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import modelo.Area;
+import modelo.Dificultad;
 import modelo.Proyectil;
 
 public class PanelJuego extends JPanel {
-    private ControladorJuego controladorJuego;
+    private Area areaJuego;
 
     private boolean needsRepaint = false;
 
-    private Area areaJuego;
 
     private ImagenNave imagenNave;
     private List<UIProyectil> uiProyectiles;
 
     private Timer timer;
 
-    public PanelJuego(int ancho, int alto) {
+    public PanelJuego(Dificultad dificultad, Area areaJuego) {
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(ancho, alto));
+        this.setPreferredSize(new Dimension(areaJuego.getAncho(), areaJuego.getAlto()));
 
-        areaJuego = new Area(ancho, alto);
-
+        this.areaJuego = areaJuego;
         imagenNave = new ImagenNave();
         imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
         uiProyectiles = new ArrayList<>();
@@ -69,6 +68,7 @@ public class PanelJuego extends JPanel {
     private void iniciarCicloJuego() {
         timer = new Timer(30, e -> {
             System.out.println("Ciclo de juego");
+            actualizarCooldownNave();
             actualizarProyectiles();
             actualizarInvasores();
             
@@ -86,6 +86,10 @@ public class PanelJuego extends JPanel {
             timer.stop();
             timer = null;
         }
+    }
+
+    private void actualizarCooldownNave(){
+        ControladorJuego.getInstancia(areaJuego).actualizarCooldownNave();
     }
 
     private void actualizarProyectiles() {

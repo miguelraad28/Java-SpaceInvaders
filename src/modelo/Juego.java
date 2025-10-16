@@ -11,23 +11,21 @@ package modelo;
 public class Juego {
 
     private boolean enCurso;
+    private int puntaje;
+    private int vidas;
+    private Dificultad dificultad;
 
-    public Juego(Dificultad dificultad, int ancho, int alto) {
-
+    public Juego(Dificultad dificultad) {
+        this.puntaje = 0;
+        this.vidas = 3;
+        this.dificultad = dificultad;
     }
 
     public void iniciar() {
-        // TODO
+        this.enCurso = true;
     }
 
     public boolean estoyEnCurso() {
         return this.enCurso;
     }
-
-    public void actualizar() {
-        //
-
-        return;
-    }
-
 }

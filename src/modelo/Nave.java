@@ -27,7 +27,7 @@ public class Nave {
         this.tiempoDesdeUltDisparo = tiempoRecarga;
     }
 
-    public void actualizar() {
+    public void actualizarCooldownNave() {
         tiempoDesdeUltDisparo += 1;
     }
 

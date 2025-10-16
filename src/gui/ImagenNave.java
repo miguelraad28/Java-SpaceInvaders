@@ -1,13 +1,12 @@
 package gui;
 
 import java.awt.Image;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class ImagenNave extends JLabel{
-    private int ancho;
-    private int alto;
+    private final int ancho;
+    private final int alto;
 
     public ImagenNave(){
         ancho = 50;

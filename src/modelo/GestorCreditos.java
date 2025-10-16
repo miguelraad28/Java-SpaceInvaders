@@ -14,7 +14,7 @@ public class GestorCreditos {
     private int creditosCargados;
     
     public GestorCreditos() {
-        this.creditosCargados = 0;
+        this.creditosCargados = 1;
     }
     
     /**
