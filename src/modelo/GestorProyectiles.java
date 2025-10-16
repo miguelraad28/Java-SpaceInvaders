@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Administra todos los proyectiles activos en el juego.
+ * Administra todos los proyectiles activos en el juego. ESTA CLASE FUE REMPLAZADA POR EL CONTROLADOR PROYECTILES??
  */
 public class GestorProyectiles {
 
@@ -38,7 +38,7 @@ public class GestorProyectiles {
     /**
      * Actualiza el estado de todos los proyectiles.
      */
-    public void actualizar(float dt, MuroEnergia muro, Nave nave, Juego juego, Area area, Oleada oleada) {
+    public void actualizar(float dt, GestorMuros muro, Nave nave, Juego juego, Area area, Oleada oleada) {
         Iterator<Proyectil> iterador = proyectiles.iterator();
 
         // while (iterador.hasNext()) {
