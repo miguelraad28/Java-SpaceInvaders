@@ -9,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import controlador.Controlador;
-
+//
 public class PanelRanking extends JPanel {
     private VentanaPrincipal ventanaPrincipal;
     private Controlador controlador;
