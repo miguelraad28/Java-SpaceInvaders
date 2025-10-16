@@ -16,6 +16,7 @@ import modelo.Proyectil;
 
 public class PanelJuego extends JPanel {
     private Area areaJuego;
+    private VentanaPrincipal ventanaPrincipal;
 
     private boolean needsRepaint = false;
 
@@ -25,11 +26,13 @@ public class PanelJuego extends JPanel {
 
     private Timer timer;
 
-    public PanelJuego(Dificultad dificultad, Area areaJuego) {
+    public PanelJuego(Dificultad dificultad, Area areaJuego, VentanaPrincipal ventanaPrincipal) {
         this.setLayout(null);
         this.setPreferredSize(new Dimension(areaJuego.getAncho(), areaJuego.getAlto()));
 
         this.areaJuego = areaJuego;
+        this.ventanaPrincipal = ventanaPrincipal;
+
         imagenNave = new ImagenNave();
         imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
         uiProyectiles = new ArrayList<>();

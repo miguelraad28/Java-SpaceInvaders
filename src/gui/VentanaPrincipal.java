@@ -101,11 +101,11 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void mostrarPanelJuego(Dificultad dificultad) {        
-        panelJuego = new PanelJuego(dificultad, areaJuego);
+        panelJuego = new PanelJuego(dificultad, areaJuego, this);
 
         this.setContentPane(panelJuego);
 
-        this.revalidate();
+        this.revalidate();  
         this.repaint();
         
         panelJuego.solicitarFocoNave();
