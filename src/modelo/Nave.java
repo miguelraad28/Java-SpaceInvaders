@@ -1,48 +1,66 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package modelo;
 
-/**
- *
- * @author Dell
- */
 public class Nave {
+
+    // Posición y tamaño
     private int x;
     private int y;
-    private int velocidad;
     private int ancho;
     private int alto;
+
+    // Movimiento
+    private int velocidad;
     private Area areaJuego;
 
-    public Nave(int x, int y, int velocidad, int ancho, int alto, Area areaJuego) {
+    // Disparo
+    private float tiempoRecarga;
+    private float tiempoDesdeUltDisparo;
+
+    public Nave(int x, int y, int velocidad, int ancho, int alto, Area areaJuego, float tiempoRecarga) {
         this.x = x;
         this.y = y;
         this.velocidad = velocidad;
         this.ancho = ancho;
         this.alto = alto;
         this.areaJuego = areaJuego;
+        this.tiempoRecarga = tiempoRecarga;
+        this.tiempoDesdeUltDisparo = tiempoRecarga;
+    }
+
+    public void actualizar() {
+        tiempoDesdeUltDisparo += 1;
     }
 
     public int moverIzquierda() {
-        if (this.x - this.velocidad > 0)
-            this.x -= this.velocidad;
-        else
-            this.x = 0;
+        this.x -= this.velocidad;
+        if (this.x < 0) this.x = 0;
         return this.x;
     }
 
     public int moverDerecha() {
-        if (this.x + this.velocidad + this.ancho < areaJuego.getAncho())
+        if (this.x + this.velocidad + this.ancho < areaJuego.getAncho()) {
             this.x += this.velocidad;
-        // else
-        //     // Mover justo al borde
-        //     this.x = areaJuego.getAncho() - this.ancho;
+        } else {
+            this.x = areaJuego.getAncho() - this.ancho;
+        }
         return this.x;
     }
 
+    // Puede disparar?
+    public boolean puedeDisparar() {
+        return tiempoDesdeUltDisparo >= tiempoRecarga;
+    }
+
+    //
     public Proyectil intentarDisparo() {
-        return new Proyectil(this.x + this.ancho / 2, this.y, 4, true);
+        if (!puedeDisparar()) return null;
+        tiempoDesdeUltDisparo = 0;
+
+
+        int px = this.x + this.ancho / 2;
+        int py = this.y;
+        int velocidadProyectil = 4;
+
+        return new Proyectil(px, py, velocidadProyectil, true);
     }
 }
