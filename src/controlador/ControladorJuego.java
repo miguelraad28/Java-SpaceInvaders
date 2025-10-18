@@ -6,6 +6,7 @@ package controlador;
 
 import modelo.Area;
 import modelo.Dificultad;
+import modelo.GestorCreditos;
 import modelo.Juego;
 import modelo.Nave;
 import modelo.Proyectil;
@@ -18,13 +19,14 @@ public class ControladorJuego {
 
     private static ControladorJuego instancia;
 
-    private final Nave nave;
     private final Area areaJuego;
+    private final GestorCreditos gestorCreditos;
+    private Nave nave;
     private Juego juego;
 
     private ControladorJuego(Area areaJuego) {
         this.areaJuego = areaJuego;
-        this.nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego, 5);
+        this.gestorCreditos = new GestorCreditos();
     }
 
     public static ControladorJuego getInstancia(Area areaJuego) {
@@ -34,11 +36,25 @@ public class ControladorJuego {
         return instancia;
     }
 
+    public void cargar(int cantidad) {
+        this.gestorCreditos.cargar(cantidad);
+    }
+
+    public int obtenerSaldo() {
+        return this.gestorCreditos.obtenerSaldo();
+    }
+
     public void iniciarJuego(Dificultad dificultad) {
         dificultad.getMultiplicadorVelocidad();
-
+        
+        nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego, 5);
         juego = new Juego(dificultad);
         juego.iniciar();
+        gestorCreditos.consumirParaNuevoJuego();
+    }
+
+    public boolean hayColisionConNave(Proyectil proyectil) {
+        return this.nave.hayColision(proyectil);
     }
 
     public int moverNaveIzquierda() {
@@ -55,6 +71,14 @@ public class ControladorJuego {
 
     public void actualizarCooldownNave(){
         this.nave.actualizarCooldownNave();
-        return;
+    }
+
+    public void quitarVida() {
+        this.juego.quitarVida();
+
+        if(this.juego.obtenerVidas() <= 0) {
+            // todo:
+            // Mover nave
+        }
     }
 }

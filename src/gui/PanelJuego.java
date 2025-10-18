@@ -1,5 +1,6 @@
 package gui;
 
+import controlador.ControladorInvasores;
 import controlador.ControladorJuego;
 import controlador.ControladorProyectiles;
 import java.awt.Dimension;
@@ -15,14 +16,15 @@ import modelo.Dificultad;
 import modelo.Proyectil;
 
 public class PanelJuego extends JPanel {
+
     private Area areaJuego;
     private VentanaPrincipal ventanaPrincipal;
 
     private boolean needsRepaint = false;
 
-
     private ImagenNave imagenNave;
     private List<UIProyectil> uiProyectiles;
+    private List<ImagenInvasor> uiInvasores;
 
     private Timer timer;
 
@@ -34,8 +36,10 @@ public class PanelJuego extends JPanel {
         this.ventanaPrincipal = ventanaPrincipal;
 
         imagenNave = new ImagenNave();
-        imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
+        uiInvasores = new ArrayList<>();
         uiProyectiles = new ArrayList<>();
+
+        imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
 
         this.add(imagenNave);
 
@@ -65,7 +69,20 @@ public class PanelJuego extends JPanel {
             }
         });
 
+        iniciarInvasores(dificultad);
+
         iniciarCicloJuego();
+    }
+
+    private void iniciarInvasores(Dificultad dificultad) {
+        int[][] posiciones = ControladorInvasores.getInstancia(areaJuego).iniciarInvasores(dificultad);
+
+        for (int[] posicion : posiciones) {
+            ImagenInvasor invasor = new ImagenInvasor();
+            invasor.mover(posicion[0], posicion[1]);
+            uiInvasores.add(invasor);
+            add(invasor);
+        }
     }
 
     private void iniciarCicloJuego() {
@@ -74,8 +91,8 @@ public class PanelJuego extends JPanel {
             actualizarCooldownNave();
             actualizarProyectiles();
             actualizarInvasores();
-            
-            if(needsRepaint) {
+
+            if (needsRepaint) {
                 revalidate();
                 repaint();
                 needsRepaint = false;
@@ -91,24 +108,25 @@ public class PanelJuego extends JPanel {
         }
     }
 
-    private void actualizarCooldownNave(){
+    private void actualizarCooldownNave() {
         ControladorJuego.getInstancia(areaJuego).actualizarCooldownNave();
     }
 
     private void actualizarProyectiles() {
-        Map<Integer, Proyectil> proyectilesMap = ControladorProyectiles.getInstancia(areaJuego).moverProyectiles();
+        Map<Integer, int[]> proyectilesMap = ControladorProyectiles.getInstancia(areaJuego).moverProyectiles();
+
         // Iterar hacia atrás para poder eliminar elementos de forma segura
         for (int i = uiProyectiles.size() - 1; i >= 0; i--) {
             UIProyectil uiProyectil = uiProyectiles.get(i);
-            System.out.println("Mover UIProyectil: " + uiProyectil.getProyectilID());
-            Proyectil proyectil = proyectilesMap.get(uiProyectil.getProyectilID());
+            int[] proyectil = proyectilesMap.get(uiProyectil.getProyectilID());
+
             // No se destruyó el proyectil
             if (proyectil != null) {
-                uiProyectil.mover(proyectil.getX(), proyectil.getY());
-                System.out.println("Mover UIProyectil: " + uiProyectil.getX() + " " + uiProyectil.getY());
+                uiProyectil.mover(proyectil[0], proyectil[1]);
             } else {
                 // El obj. de negocio ya no existe, lo eliminamos de la UI
-                System.out.println("Salió del mapa");
+                // acá necesito saber con quien impactó, para de esa forma poder
+                // actualizarlo en la UI, si es muro, si es invasor, si es nave
                 uiProyectiles.remove(i);
                 remove(uiProyectil);
                 needsRepaint = true;
@@ -117,9 +135,9 @@ public class PanelJuego extends JPanel {
     }
 
     public void actualizarInvasores() {
-
+        ControladorInvasores.getInstancia(areaJuego).moverInvasores();
     }
-    
+
     public void solicitarFocoNave() {
         imagenNave.requestFocusInWindow();
     }

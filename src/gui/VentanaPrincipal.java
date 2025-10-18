@@ -4,7 +4,6 @@
  */
 package gui;
 
-import controlador.ControladorCreditos;
 import controlador.ControladorJuego;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -16,8 +15,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import modelo.Area;
 import modelo.Dificultad;
+
 /**
  *
  * @author Dell
@@ -28,7 +29,8 @@ public class VentanaPrincipal extends JFrame {
     private PanelJuego panelJuego;
     private Area areaJuego;
 
-    private JButton btnIniciarCadete, btnIniciarGuerrero, btnIniciarMaestro, btnVerRanking;
+    private JTextField txtCargarCreditos;
+    private JButton btnIniciarCadete, btnIniciarGuerrero, btnIniciarMaestro, btnVerRanking, btnCargarCreditos;
 
     private final int ancho = 800;
     private final int alto = 600;
@@ -39,6 +41,7 @@ public class VentanaPrincipal extends JFrame {
         this.setSize(ancho, alto);
         this.setResizable(false);
 
+        areaJuego = new Area(ancho, alto);
 
         construirVentana();
         construirEventos();
@@ -49,12 +52,13 @@ public class VentanaPrincipal extends JFrame {
     private void construirVentana() {
         contenedor = this.getContentPane();
 
-        areaJuego = new Area(ancho, alto);
         // Crear los botones una sola vez
         btnIniciarCadete = new JButton("Cadete");
         btnIniciarGuerrero = new JButton("Guerrero");
         btnIniciarMaestro = new JButton("Maestro");
         btnVerRanking = new JButton("Ver Ranking");
+        btnCargarCreditos = new JButton("Cargar Créditos");
+        txtCargarCreditos = new JTextField(10);
 
         mostrarPanelInicial();
     }
@@ -69,16 +73,27 @@ public class VentanaPrincipal extends JFrame {
         ManejoBotonRanking mbr = new ManejoBotonRanking();
 
         btnVerRanking.addActionListener(mbr);
+
+        btnCargarCreditos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ControladorJuego.getInstancia(areaJuego).cargar(Integer.parseInt(txtCargarCreditos.getText()));
+                txtCargarCreditos.setText("");
+                mostrarPanelInicial();
+                mostrarMensaje("Créditos cargados correctamente");
+            }
+        });
+
     }
 
     public void mostrarPanelInicial() {
         // Limpiar el contenedor
         contenedor.removeAll();
 
-        contenedor.setLayout(new GridLayout(4, 1));
+        contenedor.setLayout(new GridLayout(6, 1));
 
         JLabel lblTitulo = new JLabel("Space Invaders", JLabel.CENTER);
-        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + ControladorCreditos.getInstancia().obtenerSaldo(),
+        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + ControladorJuego.getInstancia(areaJuego).obtenerSaldo(),
                 JLabel.CENTER);
         JPanel pnlDificultades = new JPanel();
 
@@ -92,6 +107,8 @@ public class VentanaPrincipal extends JFrame {
 
         contenedor.add(lblTitulo);
         contenedor.add(lblCreditosDisponibles);
+        contenedor.add(txtCargarCreditos);
+        contenedor.add(btnCargarCreditos);
         contenedor.add(pnlDificultades);
         contenedor.add(btnVerRanking);
 
@@ -100,14 +117,14 @@ public class VentanaPrincipal extends JFrame {
         contenedor.repaint();
     }
 
-    public void mostrarPanelJuego(Dificultad dificultad) {        
+    public void mostrarPanelJuego(Dificultad dificultad) {
         panelJuego = new PanelJuego(dificultad, areaJuego, this);
 
         this.setContentPane(panelJuego);
 
-        this.revalidate();  
+        this.revalidate();
         this.repaint();
-        
+
         panelJuego.solicitarFocoNave();
     }
 
@@ -130,17 +147,22 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void iniciarJuego(Dificultad dificultad) {
-        ControladorJuego.getInstancia(areaJuego).iniciarJuego(dificultad);
-        mostrarPanelJuego(dificultad);
+        if (ControladorJuego.getInstancia(areaJuego).obtenerSaldo() <= 0) {
+            mostrarMensaje("No tienes créditos suficientes");
+        } else {
+            ControladorJuego.getInstancia(areaJuego).iniciarJuego(dificultad);
+            mostrarPanelJuego(dificultad);
+        }
     }
 
     public class ManejoBotonIniciar implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton boton = (JButton) e.getSource();
 
             String dificultad = boton.getText();
-            
+
             switch (dificultad) {
                 case "Cadete":
                     iniciarJuego(Dificultad.CADETE);
@@ -156,6 +178,7 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public class ManejoBotonRanking implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             VentanaPrincipal.this.mostrarPanelRanking();

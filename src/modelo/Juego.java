@@ -28,4 +28,12 @@ public class Juego {
     public boolean estoyEnCurso() {
         return this.enCurso;
     }
+
+    public void quitarVida() {
+        this.vidas--;
+    }
+
+    public int obtenerVidas() {
+        return this.vidas;
+    }
 }

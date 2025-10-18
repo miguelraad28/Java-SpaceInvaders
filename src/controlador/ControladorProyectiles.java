@@ -1,10 +1,9 @@
 package controlador;
 
-import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.Map;
 import modelo.Area;
 import modelo.Proyectil;
 
@@ -30,8 +29,8 @@ public class ControladorProyectiles {
         this.proyectiles.add(proyectil);
     }
 
-    public Map<Integer, Proyectil> moverProyectiles() {
-        Map<Integer, Proyectil> proyectilesMap = new HashMap<>();
+    public Map<Integer, int[]> moverProyectiles() {
+        Map<Integer, int[]> proyectilesMap = new HashMap<>();
         // Iterar hacia atrás para poder eliminar elementos de forma segura
         for (int i = proyectiles.size() - 1; i >= 0; i--) {
             Proyectil proyectil = proyectiles.get(i);
@@ -45,7 +44,7 @@ public class ControladorProyectiles {
                 boolean hayColision = this.hayColision(proyectil);
                 // Verificar que no haya colisionado o salido del mapa.
                 if(!hayColision){
-                    proyectilesMap.put(proyectil.getProyectilID(), proyectil);
+                    proyectilesMap.put(proyectil.getProyectilID(), new int[]{proyectil.getX(), proyectil.getY()});
                 } else {
                     this.eliminarProyectil(proyectil);
                 }
@@ -57,11 +56,24 @@ public class ControladorProyectiles {
     }
 
     private boolean hayColision(Proyectil proyectil) {
+        // Ver si hay muro o invasor
+        if(ControladorMuro.getInstancia(areaJuego).hayColisionConMuro(proyectil)){
+            return true;
+        }
+
         if (proyectil.esDelJugador()) {
-            // Ver si hay muro o invasor
+
+            if(ControladorInvasores.getInstancia(areaJuego).hayColisionConInvasor(proyectil)){
+                return true;
+            }
+
             return false;
         } else {
             // Ver si hay muro o nave
+            if(ControladorJuego.getInstancia(areaJuego).hayColisionConNave(proyectil)){
+                return true;
+            }
+
             return false;
         }
     }

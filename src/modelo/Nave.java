@@ -63,4 +63,9 @@ public class Nave {
 
         return new Proyectil(px, py, velocidadProyectil, true);
     }
+
+    public boolean hayColision(Proyectil proyectil) {
+        //TODO
+        return false;
+    }
 }

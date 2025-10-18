@@ -28,19 +28,11 @@ public class GestorCreditos {
     }
     
     /**
-     * Verifica si se puede iniciar un juego
-     * @return true si hay créditos disponibles
-     */
-    public boolean puedeIniciarJuego() {
-        return this.obtenerSaldo() > 0;
-    }
-    
-    /**
      * Consume un crédito para nuevo juego
      * @return true si se pudo consumir el crédito
      */
     public boolean consumirParaNuevoJuego() {
-        if (puedeIniciarJuego()) {
+        if (this.creditosCargados > 0) {
             this.creditosCargados--;
             return true;
         }
