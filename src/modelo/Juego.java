@@ -21,6 +21,18 @@ public class Juego {
         this.dificultad = dificultad;
     }
 
+    public int getVidas() {
+        return this.vidas;
+    }
+
+    public int getPuntaje() {
+        return this.puntaje;
+    }
+
+    public Dificultad getDificultad() {
+        return this.dificultad;
+    }
+
     public void iniciar() {
         this.enCurso = true;
     }
@@ -33,7 +45,4 @@ public class Juego {
         this.vidas--;
     }
 
-    public int obtenerVidas() {
-        return this.vidas;
-    }
 }

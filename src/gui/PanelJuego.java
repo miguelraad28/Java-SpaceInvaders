@@ -4,27 +4,30 @@ import controlador.ControladorInvasores;
 import controlador.ControladorJuego;
 import controlador.ControladorProyectiles;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import modelo.Area;
 import modelo.Dificultad;
-import modelo.Proyectil;
 
 public class PanelJuego extends JPanel {
 
     private Area areaJuego;
     private VentanaPrincipal ventanaPrincipal;
 
-    private boolean needsRepaint = false;
-
     private ImagenNave imagenNave;
     private List<UIProyectil> uiProyectiles;
     private List<ImagenInvasor> uiInvasores;
+
+    private JLabel lblDificultad, lblVidas, lblPuntaje;
 
     private Timer timer;
 
@@ -56,12 +59,12 @@ public class PanelJuego extends JPanel {
                     nuevoXNave = ControladorJuego.getInstancia(areaJuego).moverNaveDerecha();
                     imagenNave.mover(nuevoXNave, imagenNave.getY());
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == 32) { // Espacio
-                    Proyectil proyectil = ControladorJuego.getInstancia(areaJuego).disparar();
+                    int[] proyectil = ControladorJuego.getInstancia(areaJuego).disparar();
+
                     if (proyectil != null) {
-                        ControladorProyectiles.getInstancia(areaJuego).agregarProyectil(proyectil);
-                        UIProyectil uiProyectil = new UIProyectil(true);
-                        System.out.println("Proyectil: " + proyectil.getX() + " " + proyectil.getY());
-                        uiProyectil.mover(proyectil.getX(), proyectil.getY());
+                        UIProyectil uiProyectil = new UIProyectil(proyectil[0], true);
+                        System.out.println("Proyectil: " + proyectil[1] + " " + proyectil[2]);
+                        uiProyectil.mover(proyectil[1], proyectil[2]);
                         uiProyectiles.add(uiProyectil);
                         add(uiProyectil);
                     }
@@ -70,6 +73,8 @@ public class PanelJuego extends JPanel {
         });
 
         iniciarInvasores(dificultad);
+
+        pintarDatosDePartida();
 
         iniciarCicloJuego();
     }
@@ -86,18 +91,21 @@ public class PanelJuego extends JPanel {
     }
 
     private void iniciarCicloJuego() {
-        timer = new Timer(30, e -> {
-            System.out.println("Ciclo de juego");
-            actualizarCooldownNave();
-            actualizarProyectiles();
-            actualizarInvasores();
+        timer = new Timer(40, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Ciclo de juego");
+                actualizarCooldownNave();
+                actualizarCooldownInvasor();
+                actualizarInvasores();
+                actualizarProyectiles();
+                disparoDeInvasores();
 
-            if (needsRepaint) {
                 revalidate();
                 repaint();
-                needsRepaint = false;
             }
         });
+
         timer.start();
     }
 
@@ -110,6 +118,20 @@ public class PanelJuego extends JPanel {
 
     private void actualizarCooldownNave() {
         ControladorJuego.getInstancia(areaJuego).actualizarCooldownNave();
+    }
+
+    private void actualizarCooldownInvasor() {
+        ControladorInvasores.getInstancia(areaJuego).actualizarCooldownInvasor();
+    }
+
+    private void disparoDeInvasores() {
+        Map<Integer, int[]> proyectilesMap = ControladorInvasores.getInstancia(areaJuego).disparoDeInvasores();
+        for (Map.Entry<Integer, int[]> entry : proyectilesMap.entrySet()) {
+            UIProyectil uiProyectil = new UIProyectil(entry.getKey(), false);
+            uiProyectil.mover(entry.getValue()[0], entry.getValue()[1]);
+            uiProyectiles.add(uiProyectil);
+            add(uiProyectil);
+        }
     }
 
     private void actualizarProyectiles() {
@@ -129,7 +151,6 @@ public class PanelJuego extends JPanel {
                 // actualizarlo en la UI, si es muro, si es invasor, si es nave
                 uiProyectiles.remove(i);
                 remove(uiProyectil);
-                needsRepaint = true;
             }
         }
     }
@@ -140,5 +161,17 @@ public class PanelJuego extends JPanel {
 
     public void solicitarFocoNave() {
         imagenNave.requestFocusInWindow();
+    }
+
+    private void pintarDatosDePartida() {
+        lblDificultad = new JLabel("Dificultad: " + ControladorJuego.getInstancia(areaJuego).obtenerDificultad());
+        lblVidas = new JLabel("Vidas: " + ControladorJuego.getInstancia(areaJuego).obtenerVidas());
+        lblPuntaje = new JLabel("Puntaje: " + ControladorJuego.getInstancia(areaJuego).obtenerPuntaje());
+        lblDificultad.setBounds(10, 10, 200, 20);
+        lblVidas.setBounds(10, 30, 200, 20);
+        lblPuntaje.setBounds(10, 50, 200, 20);
+        add(lblDificultad);
+        add(lblVidas);
+        add(lblPuntaje);
     }
 }

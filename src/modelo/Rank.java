@@ -5,13 +5,13 @@
 package modelo;
 
 /**
- * EntradaRanking - Representa una entrada individual en el ranking
+ * Rank - Representa una entrada individual en el ranking
  */
-public class EntradaRanking {
+public class Rank {
     private String nombre;
     private int mayorPuntaje;
     
-    public EntradaRanking(String nombre, int puntaje) {
+    public Rank(String nombre, int puntaje) {
         this.nombre = nombre;
         this.mayorPuntaje = puntaje;
     }

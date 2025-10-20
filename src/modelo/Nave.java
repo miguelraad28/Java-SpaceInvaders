@@ -7,14 +7,11 @@ public class Nave {
     private int y;
     private int ancho;
     private int alto;
-
-    // Movimiento
     private int velocidad;
-    private Area areaJuego;
-
-    // Disparo
     private float tiempoRecarga;
     private float tiempoDesdeUltDisparo;
+
+    private Area areaJuego;
 
     public Nave(int x, int y, int velocidad, int ancho, int alto, Area areaJuego, float tiempoRecarga) {
         this.x = x;
@@ -28,7 +25,8 @@ public class Nave {
     }
 
     public void actualizarCooldownNave() {
-        tiempoDesdeUltDisparo += 1;
+        if (tiempoDesdeUltDisparo < tiempoRecarga)
+            tiempoDesdeUltDisparo++;
     }
 
     public int moverIzquierda() {
