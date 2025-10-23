@@ -66,20 +66,18 @@ public class Muro {
         vida = (float) (this.vida - 0.1);
     }
 
-    public Optional<Muro> hayColision(Muro m, Proyectil p){
-        if (p.esDelJugador()){
-        if (p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho() && p.getY() >= this.getY() && p.getY() <= this.getY() + this.getAlto()) {
-            m.impactadoPorJugador();
-            if(m.estoyRoto()) {
-                return new MuroView;
+    public Optional<Muro> hayColision(Muro m, Proyectil p) {
+        if (p.esDelJugador()) {
+            if (p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho() && p.getY() >= this.getY() && p.getY() <= this.getY() + this.getAlto()) {
+                m.impactadoPorJugador();
+                return new MuroView(m.MuroID, m.getVida(), m.getX(), m.getY());
+            } else if (p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho() && p.getY() + p.getAlto() >= this.getY()) {
+                m.impactadoPorInvasor();
             }
-        }else if (p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho() && p.getY() + p.getAlto() >= this.getY()){
-            m.impactadoPorInvasor();
+            return new MuroView(m.MuroID, m.getVida(), m.getX(), m.getY());
+        else{
+                return null;
+            }
         }
-        if(m.estoyRoto()) {
-                return new MuroView;
-        }
-        else {return null;}
     }
-
 }
