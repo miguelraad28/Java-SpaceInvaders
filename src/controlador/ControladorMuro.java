@@ -41,6 +41,9 @@ public class ControladorMuro {
         return proyectil.esDelJugador();
     }
 
+
+
+    private boolean hayColision(Muro muro, Proyectil proyectil) {
     public boolean hayColisionConMuro(Proyectil proyectil) {
         if (esDelJugador(proyectil)) {
             return false;
@@ -48,7 +51,8 @@ public class ControladorMuro {
             return false;
         }
     }
-    private void impactadoPorJugador(Muro muro) {
+    private void impactadoPorJugador
+            (Muro muro) {
         float vida = muro.getVida();
         vida = (float) (vida*0.95);
     }
@@ -57,6 +61,9 @@ public class ControladorMuro {
         float vida = muro.getVida();
         vida = (float) (vida*0.90);
     }
+    /*
+    ELIMINAR ESTA CLASE
+    */
 
 
     
