@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.Optional;
+
 public class Muro {
 
     private static int numeradorID = 0;
@@ -46,8 +48,38 @@ public class Muro {
 
     public float getVida() {return this.vida; }
 
-    public boolean estoyRoto(float vida){
+    private void setVida(float vida){
+    if(vida > 0){
+        this.vida = vida;
+    }
+}
+
+    public boolean estoyRoto(){
         return vida == 0;
+    }
+
+    private void impactadoPorJugador(){
+        vida = (float) (this.vida - 0.05);
+    }
+
+    private void impactadoPorInvasor() {
+        vida = (float) (this.vida - 0.1);
+    }
+
+    public Optional<Muro> hayColision(Muro m, Proyectil p){
+        if (p.esDelJugador()){
+        if (p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho() && p.getY() >= this.getY() && p.getY() <= this.getY() + this.getAlto()) {
+            m.impactadoPorJugador();
+            if(m.estoyRoto()) {
+                return new MuroView;
+            }
+        }else if (p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho() && p.getY() + p.getAlto() >= this.getY()){
+            m.impactadoPorInvasor();
+        }
+        if(m.estoyRoto()) {
+                return new MuroView;
+        }
+        else {return null;}
     }
 
 }

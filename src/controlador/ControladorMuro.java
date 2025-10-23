@@ -45,14 +45,17 @@ public class ControladorMuro {
         return proyectil.esDelJugador();
     }
 
-    private void hayColision(Muro muro, Proyectil proyectil) {
+
+
+    private boolean hayColision(Muro muro, Proyectil proyectil) {
         if (esDelJugador(proyectil)) {
             impactadoPorJugador(muro);
         } else {
             impactadoPorInvasor(muro);
         }
     }
-    private void impactadoPorJugador(Muro muro) {
+    private void impactadoPorJugador
+            (Muro muro) {
         float vida = muro.getVida();
         vida = (float) (vida*0.95);
     }
@@ -61,32 +64,7 @@ public class ControladorMuro {
         float vida = muro.getVida();
         vida = (float) (vida*0.90);
     }
-
-    public Map<Integer, Muro> actualizarMuros() {
-        Map<Integer, Muro> murosMap = new HashMap<>();
-
-        // Iterar hacia atrás para poder eliminar elementos de forma segura
-        for (int i = muros.size() - 1; i >= 0; i--) {
-            Muro m = muros.get(i);
-            for (int j = proyectiles.size() - 1; j >= 0; j--) {
-                Proyectil p = proyectiles.get(j);
-                hayColision(m, p);
-                if (m.estoyRoto(m.getVida())){
-                    murosMap.put(m.getMuroID(), m);
-                }
-                else  {
-                    this.eliminarMuro(m);
-                }
-            }
-        }
-
-        return murosMap;
-    }
     /*
-    Esta funcion debe usarse cada vez que actualizo el ciclo de los proyectiles
-    Esta funcion recorre por cada muro, si es impactado por cada uno de los proyectiles activos en ese momento
-    Luego disminuye la vida, y pregunta si esta roto, de tener vida > 0 lo agrega al map, si es = 0 no lo agrega
-    Revisar si hace las cosas bien, la verdad estoy re chapita no me da el bocho
-    Revisar en que parte de Panel juego debe implementarse.
+    ELIMINAR ESTA CLASE
     */
 }
