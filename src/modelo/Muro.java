@@ -16,10 +16,10 @@ public class Muro {
     /**
      * Constructor para crear un nuevo Muro.
      */
-    public Muro(int x, int y, float vida) {
+    public Muro(int x, int y, int ancho, int alto, float vida) {
         this.MuroID = numeradorID++;
-        this.ancho = 4;
-        this.alto = 4;
+        this.ancho = ancho;
+        this.alto = alto;
         this.x = x;
         this.y = y;
         this.vida = vida;

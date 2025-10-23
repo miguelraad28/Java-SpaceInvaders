@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import modelo.Area;
 import modelo.Dificultad;
+import views.MuroView;
 
 public class PanelJuego extends JPanel {
 
@@ -26,6 +27,7 @@ public class PanelJuego extends JPanel {
     private ImagenNave imagenNave;
     private List<UIProyectil> uiProyectiles;
     private List<ImagenInvasor> uiInvasores;
+    private List<ImagenMuro> uiMuros;
 
     private JLabel lblDificultad, lblVidas, lblPuntaje;
 
@@ -41,6 +43,7 @@ public class PanelJuego extends JPanel {
         imagenNave = new ImagenNave();
         uiInvasores = new ArrayList<>();
         uiProyectiles = new ArrayList<>();
+        uiMuros = new ArrayList<>();
 
         imagenNave.mover(areaJuego.getAncho() / 2 - imagenNave.getAncho() / 2, 500);
 
@@ -73,6 +76,8 @@ public class PanelJuego extends JPanel {
         });
 
         iniciarInvasores(dificultad);
+        
+        iniciarMuros();
 
         pintarDatosDePartida();
 
@@ -87,6 +92,17 @@ public class PanelJuego extends JPanel {
             invasor.mover(posicion[0], posicion[1]);
             uiInvasores.add(invasor);
             add(invasor);
+        }
+    }
+
+    private void iniciarMuros() {
+        List<MuroView> muroViews = ControladorJuego.getInstancia(areaJuego).iniciarMuros();
+
+        for (MuroView muroView : muroViews) {
+            ImagenMuro imagenMuro = new ImagenMuro();
+            imagenMuro.mover(muroView.getX(), muroView.getY());
+            uiMuros.add(imagenMuro);
+            add(imagenMuro);
         }
     }
 
