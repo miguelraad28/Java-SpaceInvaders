@@ -1,5 +1,9 @@
 package modelo;
 
+import gui.ImagenNave;
+
+import java.util.Optional;
+
 public class Nave {
 
     // Posición y tamaño
@@ -62,8 +66,22 @@ public class Nave {
         return new Proyectil(px, py, velocidadProyectil, true);
     }
 
-    public boolean hayColision(Proyectil proyectil) {
-        //TODO
-        return false;
+    public Optional<Nave> hayColision(Proyectil proyectil) {
+
+        if (proyectil == null) return null;
+        if (proyectil.esDelJugador()) return null;
+
+        int px = proyectil.getX();
+        int py = proyectil.getY();
+        int pAncho = proyectil.getAncho();
+        int pAlto = proyectil.getAlto();
+
+        boolean colisionX = px < this.x + this.ancho && px + pAncho > this.x;
+        boolean colisionY = py < this.y + this.alto && py + pAlto > this.y;
+
+        if (colisionX && colisionY) {
+            return new NaveView(id);
+        }
+        return null;
     }
 }
