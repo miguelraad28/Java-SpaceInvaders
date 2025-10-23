@@ -1,14 +1,10 @@
 package controlador;
 
+import java.util.ArrayList;
+import java.util.List;
 import modelo.Area;
 import modelo.Muro;
-import modelo.Nave;
 import modelo.Proyectil;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ControladorMuro {
 
@@ -48,10 +44,11 @@ public class ControladorMuro {
 
 
     private boolean hayColision(Muro muro, Proyectil proyectil) {
+    public boolean hayColisionConMuro(Proyectil proyectil) {
         if (esDelJugador(proyectil)) {
-            impactadoPorJugador(muro);
+            return false;
         } else {
-            impactadoPorInvasor(muro);
+            return false;
         }
     }
     private void impactadoPorJugador
@@ -67,4 +64,7 @@ public class ControladorMuro {
     /*
     ELIMINAR ESTA CLASE
     */
+
+
+    
 }

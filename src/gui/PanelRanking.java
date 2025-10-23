@@ -3,21 +3,16 @@ package gui;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import controlador.Controlador;
-
 public class PanelRanking extends JPanel {
     private VentanaPrincipal ventanaPrincipal;
-    private Controlador controlador;
     private JButton btnVolver;
 
-    public PanelRanking(VentanaPrincipal ventanaPrincipal, Controlador controlador) {
+    public PanelRanking(VentanaPrincipal ventanaPrincipal) {
         this.ventanaPrincipal = ventanaPrincipal;
-        this.controlador = controlador;
 
         construirVentana();
         construirEventos();

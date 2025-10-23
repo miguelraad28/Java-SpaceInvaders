@@ -11,7 +11,6 @@ public class Muro {
     private int y;
     private int ancho;
     private int alto;
-    private boolean delJugador;
     private float vida;
 
     /**

@@ -4,7 +4,7 @@
  */
 package gui;
 
-import controlador.Controlador;
+import controlador.ControladorJuego;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -15,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import modelo.Area;
 import modelo.Dificultad;
 
 /**
@@ -23,35 +25,28 @@ import modelo.Dificultad;
  */
 public class VentanaPrincipal extends JFrame {
 
-    private Controlador controlador;
     private Container contenedor;
     private PanelJuego panelJuego;
+    private Area areaJuego;
 
-    private JButton btnIniciarCadete, btnIniciarGuerrero, btnIniciarMaestro, btnVerRanking;
+    private JTextField txtCargarCreditos;
+    private JButton btnIniciarCadete, btnIniciarGuerrero, btnIniciarMaestro, btnVerRanking, btnCargarCreditos;
 
     private final int ancho = 800;
     private final int alto = 600;
 
     public VentanaPrincipal() {
-        this.controlador = new Controlador(this);
-
         this.setTitle("Space Invaders - POO");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(ancho, alto);
         this.setResizable(false);
 
+        areaJuego = new Area(ancho, alto);
+
         construirVentana();
         construirEventos();
 
         this.setVisible(true);
-    }
-
-    public int getAncho() {
-        return this.ancho;
-    }
-
-    public int getAlto() {
-        return this.alto;
     }
 
     private void construirVentana() {
@@ -62,6 +57,8 @@ public class VentanaPrincipal extends JFrame {
         btnIniciarGuerrero = new JButton("Guerrero");
         btnIniciarMaestro = new JButton("Maestro");
         btnVerRanking = new JButton("Ver Ranking");
+        btnCargarCreditos = new JButton("Cargar Créditos");
+        txtCargarCreditos = new JTextField(10);
 
         mostrarPanelInicial();
     }
@@ -76,16 +73,27 @@ public class VentanaPrincipal extends JFrame {
         ManejoBotonRanking mbr = new ManejoBotonRanking();
 
         btnVerRanking.addActionListener(mbr);
+
+        btnCargarCreditos.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ControladorJuego.getInstancia(areaJuego).cargar(Integer.parseInt(txtCargarCreditos.getText()));
+                txtCargarCreditos.setText("");
+                mostrarPanelInicial();
+                mostrarMensaje("Créditos cargados correctamente");
+            }
+        });
+
     }
 
     public void mostrarPanelInicial() {
         // Limpiar el contenedor
         contenedor.removeAll();
 
-        contenedor.setLayout(new GridLayout(4, 1));
+        contenedor.setLayout(new GridLayout(6, 1));
 
         JLabel lblTitulo = new JLabel("Space Invaders", JLabel.CENTER);
-        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + controlador.obtenerCreditos(),
+        JLabel lblCreditosDisponibles = new JLabel("Créditos disponibles: " + ControladorJuego.getInstancia(areaJuego).obtenerSaldo(),
                 JLabel.CENTER);
         JPanel pnlDificultades = new JPanel();
 
@@ -99,6 +107,8 @@ public class VentanaPrincipal extends JFrame {
 
         contenedor.add(lblTitulo);
         contenedor.add(lblCreditosDisponibles);
+        contenedor.add(txtCargarCreditos);
+        contenedor.add(btnCargarCreditos);
         contenedor.add(pnlDificultades);
         contenedor.add(btnVerRanking);
 
@@ -107,20 +117,21 @@ public class VentanaPrincipal extends JFrame {
         contenedor.repaint();
     }
 
-    public void mostrarPanelJuego() {
-        panelJuego = new PanelJuego(this.ancho, this.alto);
+    public void mostrarPanelJuego(Dificultad dificultad) {
+        panelJuego = new PanelJuego(dificultad, areaJuego, this);
+
         this.setContentPane(panelJuego);
 
         this.revalidate();
         this.repaint();
-        
+
         panelJuego.solicitarFocoNave();
     }
 
     public void mostrarPanelRanking() {
         contenedor.removeAll();
 
-        PanelRanking panelRanking = new PanelRanking(this, controlador);
+        PanelRanking panelRanking = new PanelRanking(this);
         contenedor.setLayout(new BorderLayout());
         contenedor.add(panelRanking, BorderLayout.CENTER);
 
@@ -135,7 +146,17 @@ public class VentanaPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, mensaje);
     }
 
+    private void iniciarJuego(Dificultad dificultad) {
+        if (ControladorJuego.getInstancia(areaJuego).obtenerSaldo() <= 0) {
+            mostrarMensaje("No tienes créditos suficientes");
+        } else {
+            ControladorJuego.getInstancia(areaJuego).iniciarJuego(dificultad);
+            mostrarPanelJuego(dificultad);
+        }
+    }
+
     public class ManejoBotonIniciar implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton boton = (JButton) e.getSource();
@@ -144,19 +165,20 @@ public class VentanaPrincipal extends JFrame {
 
             switch (dificultad) {
                 case "Cadete":
-                    controlador.iniciarJuego(Dificultad.CADETE);
+                    iniciarJuego(Dificultad.CADETE);
                     break;
                 case "Guerrero":
-                    controlador.iniciarJuego(Dificultad.GUERRERO);
+                    iniciarJuego(Dificultad.GUERRERO);
                     break;
                 case "Maestro":
-                    controlador.iniciarJuego(Dificultad.MAESTRO);
+                    iniciarJuego(Dificultad.MAESTRO);
                     break;
             }
         }
     }
 
     public class ManejoBotonRanking implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             VentanaPrincipal.this.mostrarPanelRanking();

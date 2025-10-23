@@ -1,19 +1,17 @@
 package gui;
 
 import java.awt.Color;
-
 import javax.swing.JLabel;
 
 public class UIProyectil extends JLabel {
-    private static int numeradorID = 0;
     private int proyectilID;
     private int ancho;
     private int alto;
 
-    public UIProyectil(boolean esDelJugador) {
+    public UIProyectil(int proyectilID, boolean esDelJugador) {
+        this.proyectilID = proyectilID;
         ancho = 4;
         alto = 4;
-        proyectilID = numeradorID++;
         // Colorear el proyectil dependiendo de si es del jugador o no
         if (esDelJugador) {
             System.out.println("UProyectil del jugador creado");
@@ -35,6 +33,10 @@ public class UIProyectil extends JLabel {
 
     public int getProyectilID() {
         return this.proyectilID;
+    }
+
+    public void setProyectilID(int proyectilID) {
+        this.proyectilID = proyectilID;
     }
 
 }

@@ -4,15 +4,15 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-public class ImagenNave extends JLabel{
+public class ImagenInvasor extends JLabel{
     private final int ancho;
     private final int alto;
 
-    public ImagenNave(){
-        ancho = 50;
-        alto = 50;
+    public ImagenInvasor(){
+        ancho = 53;
+        alto = 39;
 
-        Image imagen = new ImageIcon(getClass().getResource("/nave.png")).getImage();
+        Image imagen = new ImageIcon(getClass().getResource("/invasor.png")).getImage();
 
         Image imagenAEscala = imagen.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
 

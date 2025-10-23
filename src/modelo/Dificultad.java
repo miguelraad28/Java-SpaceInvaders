@@ -5,17 +5,29 @@ package modelo;
  * Cada dificultad tiene un multiplicador de velocidad diferente.
  */
 public enum Dificultad {
-    CADETE(1.0f),
-    GUERRERO(1.5f),
-    MAESTRO(2.0f);
+    CADETE(2, 1, 40),
+    GUERRERO(4, 2, 30), 
+    MAESTRO(6, 4, 25);
     
-    private final float multiplicadorVelocidad;
-    
-    Dificultad(float multiplicadorVelocidad) {
-        this.multiplicadorVelocidad = multiplicadorVelocidad;
+    private final int velocidadInvasor;
+    private final int probabilidadDisparoInvasor;
+    private final int tiempoRecargaInvasor;
+
+    Dificultad(int velocidadInvasor, int probabilidadDisparoInvasor, int tiempoRecargaInvasor) {
+        this.velocidadInvasor = velocidadInvasor;
+        this.probabilidadDisparoInvasor = probabilidadDisparoInvasor;
+        this.tiempoRecargaInvasor = tiempoRecargaInvasor;
     }
     
-    public float getMultiplicadorVelocidad() {
-        return multiplicadorVelocidad;
+    public int getVelocidadInvasor() {
+        return velocidadInvasor;
+    }
+
+    public int getProbabilidadDisparoInvasor() {
+        return probabilidadDisparoInvasor;
+    }
+
+    public int getTiempoRecargaInvasor() {
+        return tiempoRecargaInvasor;
     }
 }
