@@ -4,9 +4,14 @@
  */
 package modelo;
 
+import java.util.Optional;
+
 public class Invasor {
   private static int direccion = 1;
 
+  private static int invId = 0;
+
+  private int invasorId;
   private int x;
   private int y;
   private int ancho;
@@ -18,8 +23,9 @@ public class Invasor {
 
   private Area areaJuego;
 
-  public Invasor(int x, int y, int ancho, int alto, int velocidad,
+  public Invasor(int invasorId,int x, int y, int ancho, int alto, int velocidad,
       int probabilidadDisparar, int tiempoRecarga, Area areaJuego) {
+    this.invasorId = invId++;
     this.x = x;
     this.y = y;
     this.ancho = ancho;
@@ -95,15 +101,34 @@ public class Invasor {
     if (!puedoDisparar())
       return null;
 
-    int random = (int)(Math.random() * 100); // 0 a 99
-    if (random < probabilidadDisparar) { // probabilidadDisparar es de 0 a 100 (porcentaje)
+    int random = (int)(Math.random() * 100);
+    if (random < probabilidadDisparar) {
       tiempoDesdeUltDisparo = 0;
 
       int px = x + ancho / 2;
-      int py = y + alto; // desde la parte inferior
+      int py = y + alto;
       int velocidadProyectil = 4;
 
       return new Proyectil(px, py, velocidadProyectil, false);
+    }
+    return null;
+  }
+
+  public Optional<Invasor> hayColision(Proyectil proyectil){
+
+    if (proyectil == null) return null;
+    if (!proyectil.esDelJugador()) return null;
+
+    int px = proyectil.getX();
+    int py = proyectil.getY();
+    int pAncho = proyectil.getAncho();
+    int pAlto = proyectil.getAlto();
+
+    boolean colisionX = px < this.x + this.ancho && px + pAncho > this.x;
+    boolean colisionY = py < this.y + this.alto && py + pAlto > this.y;
+
+    if (colisionY && colisionX) {
+      return new InvasorView(invasorId, this.x, this.y);
     }
     return null;
   }
