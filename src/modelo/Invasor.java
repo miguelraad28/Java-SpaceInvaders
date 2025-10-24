@@ -43,6 +43,10 @@ public class Invasor {
     return this.y;
   }
 
+  public void setY(int y) {
+    this.y = y;
+  }
+
   public int getAncho() {
     return this.ancho;
   }

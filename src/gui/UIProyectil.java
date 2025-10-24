@@ -17,7 +17,7 @@ public class UIProyectil extends JLabel {
             System.out.println("UProyectil del jugador creado");
             setBackground(Color.GREEN);
         } else {
-            System.out.println("UProyectil del invasor creado");
+            // System.out.println("UProyectil del invasor creado");
             setBackground(Color.RED);
         }
         setOpaque(true); // Necesario para que el color de fondo sea visible

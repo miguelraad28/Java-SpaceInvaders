@@ -1,11 +1,13 @@
 package controlador;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import modelo.Area;
 import modelo.Proyectil;
+import views.MuroView;
+import views.ObjetoImpactado;
+import views.ProyectilView;
 
 public class ControladorProyectiles {
 
@@ -29,8 +31,9 @@ public class ControladorProyectiles {
         this.proyectiles.add(proyectil);
     }
 
-    public Map<Integer, int[]> moverProyectiles() {
-        Map<Integer, int[]> proyectilesMap = new HashMap<>();
+    public List<ProyectilView> moverProyectiles() {
+        List<ProyectilView> proyectilesView = new ArrayList<>();
+
         // Iterar hacia atrás para poder eliminar elementos de forma segura
         for (int i = proyectiles.size() - 1; i >= 0; i--) {
             Proyectil proyectil = proyectiles.get(i);
@@ -38,44 +41,52 @@ public class ControladorProyectiles {
 
             boolean estaEnLimites = proyectil.estoyEnLimites(areaJuego);
 
-            if(!estaEnLimites){
+            if (!estaEnLimites) {
                 this.eliminarProyectil(proyectil);
-            }else{
-                boolean hayColision = this.hayColision(proyectil);
+            } else {
+                // Cambiar a una interfaz
+                Optional<ObjetoImpactado> objetoImpactado = this.hayColision(proyectil);
                 // Verificar que no haya colisionado o salido del mapa.
-                if(!hayColision){
-                    proyectilesMap.put(proyectil.getProyectilID(), new int[]{proyectil.getX(), proyectil.getY()});
-                } else {
+                ProyectilView proyectilView = new ProyectilView(proyectil.getProyectilID(), proyectil.getX(),
+                        proyectil.getY(), objetoImpactado);
+                proyectilesView.add(proyectilView);
+
+                if (objetoImpactado.isPresent()) {
                     this.eliminarProyectil(proyectil);
                 }
             }
-            
+
         }
 
-        return proyectilesMap;
+        return proyectilesView;
     }
 
-    private boolean hayColision(Proyectil proyectil) {
+    private Optional<ObjetoImpactado> hayColision(Proyectil proyectil) {
         // Ver si hay muro o invasor
-        if(ControladorMuro.getInstancia(areaJuego).hayColisionConMuro(proyectil)){
-            return true;
+        Optional<MuroView> muroView = ControladorJuego.getInstancia(areaJuego).hayColisionConMuro(proyectil);
+
+        if (muroView.isPresent()) {
+            return Optional.of(muroView.get());
         }
 
-        if (proyectil.esDelJugador()) {
+        //TODO ELIMINAR
+        return Optional.empty();
 
-            if(ControladorInvasores.getInstancia(areaJuego).hayColisionConInvasor(proyectil)){
-                return true;
-            }
+        // if (proyectil.esDelJugador()) {
 
-            return false;
-        } else {
-            // Ver si hay muro o nave
-            if(ControladorJuego.getInstancia(areaJuego).hayColisionConNave(proyectil)){
-                return true;
-            }
+        // if(ControladorInvasores.getInstancia(areaJuego).hayColisionConInvasor(proyectil)){
+        // return true;
+        // }
 
-            return false;
-        }
+        // return false;
+        // } else {
+        // // Ver si hay muro o nave
+        // if(ControladorJuego.getInstancia(areaJuego).hayColisionConNave(proyectil)){
+        // return true;
+        // }
+
+        // return false;
+        // }
     }
 
     private void eliminarProyectil(Proyectil p) {

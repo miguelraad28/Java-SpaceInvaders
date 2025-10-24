@@ -103,6 +103,9 @@ public class ControladorInvasores {
         // para el próximo tick.
         if (necesitoCambiarDireccion) {
             Invasor.cambiarDireccion();
+            for (Invasor invasor : invasores) {
+                invasor.setY(invasor.getY() + 10);
+            }
         }
     }
 

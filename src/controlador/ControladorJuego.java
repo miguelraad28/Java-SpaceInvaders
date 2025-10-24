@@ -6,6 +6,7 @@ package controlador;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import modelo.Dificultad;
 
@@ -29,7 +30,7 @@ public class ControladorJuego {
     private final Area areaJuego;
     private final GestorCreditos gestorCreditos;
     private List<Rank> ranking;
-    
+
     private Nave nave;
     private List<Muro> muros;
     private Juego juego;
@@ -68,6 +69,19 @@ public class ControladorJuego {
         return this.nave.hayColision(proyectil);
     }
 
+    public Optional<MuroView> hayColisionConMuro(Proyectil proyectil) {
+
+        for (Muro muro : this.muros) {
+            Optional<MuroView> muroView = muro.hayColision(proyectil);
+
+            if (muroView.isPresent()) {
+                return muroView;
+            }
+
+        }
+        return Optional.empty();
+    }
+
     public int moverNaveIzquierda() {
         return this.nave.moverIzquierda();
     }
@@ -101,6 +115,7 @@ public class ControladorJuego {
     public String obtenerDificultad() {
         return this.juego.getDificultad().name();
     }
+
     public int obtenerVidas() {
         return this.juego.getVidas();
     }
@@ -111,42 +126,41 @@ public class ControladorJuego {
 
     public List<MuroView> iniciarMuros() {
         List<MuroView> murosView = new ArrayList<>();
-        
+
         // Limpiar lista de muros existente
         this.muros.clear();
-        
+
         // Dimensiones del área de juego
         int anchoArea = areaJuego.getAncho();
         int altoArea = areaJuego.getAlto();
-        
+
         // Crear 4 muros distribuidos uniformemente
         int cantidadMuros = 4;
         int anchoMuro = 80; // Ancho de cada muro
-        int altoMuro = 60;  // Alto de cada muro
+        int altoMuro = 60; // Alto de cada muro
         int yMuro = altoArea - 200; // Posición Y fija para todos los muros
-        
+
         // Calcular espaciado entre muros
         int espacioTotal = anchoArea - (cantidadMuros * anchoMuro);
         int espacioEntreMuros = espacioTotal / (cantidadMuros + 1);
-        
+
         for (int i = 0; i < cantidadMuros; i++) {
             // Calcular posición X para cada muro
             int xMuro = espacioEntreMuros + i * (anchoMuro + espacioEntreMuros);
-            
+
             // Crear muro con vida completa
             Muro muro = new Muro(xMuro, yMuro, anchoMuro, altoMuro, 1.0f);
             this.muros.add(muro);
-            
+
             // Crear vista del muro
             MuroView muroView = new MuroView(
-                muro.getMuroID(),
-                muro.getX(),
-                muro.getY(),
-                muro.getVida()
-            );
+                    muro.getMuroID(),
+                    muro.getX(),
+                    muro.getY(),
+                    muro.getVida());
             murosView.add(muroView);
         }
-        
+
         return murosView;
     }
 }

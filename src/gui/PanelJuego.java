@@ -11,13 +11,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import modelo.Area;
 import modelo.Dificultad;
 import views.MuroView;
+import views.ProyectilView;
 
 public class PanelJuego extends JPanel {
 
@@ -65,8 +65,8 @@ public class PanelJuego extends JPanel {
                     int[] proyectil = ControladorJuego.getInstancia(areaJuego).disparar();
 
                     if (proyectil != null) {
+                        System.out.println("Proyectil: " + proyectil[0] + " " + proyectil[1] + " " + proyectil[2]);
                         UIProyectil uiProyectil = new UIProyectil(proyectil[0], true);
-                        System.out.println("Proyectil: " + proyectil[1] + " " + proyectil[2]);
                         uiProyectil.mover(proyectil[1], proyectil[2]);
                         uiProyectiles.add(uiProyectil);
                         add(uiProyectil);
@@ -75,8 +75,9 @@ public class PanelJuego extends JPanel {
             }
         });
 
+        // TODO: Hacer que iniciar invasores sea como iniciarMuros, que sea con INvasorView
         iniciarInvasores(dificultad);
-        
+
         iniciarMuros();
 
         pintarDatosDePartida();
@@ -110,11 +111,12 @@ public class PanelJuego extends JPanel {
         timer = new Timer(40, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Ciclo de juego");
+                // System.out.println("Ciclo de juego");
                 actualizarCooldownNave();
                 actualizarCooldownInvasor();
                 actualizarInvasores();
                 actualizarProyectiles();
+
                 disparoDeInvasores();
 
                 revalidate();
@@ -151,22 +153,44 @@ public class PanelJuego extends JPanel {
     }
 
     private void actualizarProyectiles() {
-        Map<Integer, int[]> proyectilesMap = ControladorProyectiles.getInstancia(areaJuego).moverProyectiles();
+        List<ProyectilView> proyectilesView = ControladorProyectiles.getInstancia(areaJuego).moverProyectiles();
 
         // Iterar hacia atrás para poder eliminar elementos de forma segura
         for (int i = uiProyectiles.size() - 1; i >= 0; i--) {
             UIProyectil uiProyectil = uiProyectiles.get(i);
-            int[] proyectil = proyectilesMap.get(uiProyectil.getProyectilID());
+            
+            // Buscar el ProyectilView correspondiente por ID
+            ProyectilView proyectilView = null;
+            for (ProyectilView pv : proyectilesView) {
+                if (pv.getProyectilID() == uiProyectil.getProyectilID()) {
+                    proyectilView = pv;
+                    break;
+                }
+            }
 
-            // No se destruyó el proyectil
-            if (proyectil != null) {
-                uiProyectil.mover(proyectil[0], proyectil[1]);
-            } else {
-                // El obj. de negocio ya no existe, lo eliminamos de la UI
-                // acá necesito saber con quien impactó, para de esa forma poder
-                // actualizarlo en la UI, si es muro, si es invasor, si es nave
-                uiProyectiles.remove(i);
+            // Si no se encontró el proyectil en la lista, significa que fue eliminado
+            if (proyectilView == null) {
+                uiProyectiles.remove(uiProyectil);
                 remove(uiProyectil);
+                continue;
+            }
+
+            // Si impactó, lo elimino
+            if (proyectilView.getObjetoImpactado().isPresent()) {
+                uiProyectiles.remove(uiProyectil);
+                remove(uiProyectil);
+
+                if (proyectilView.impactoMuro()) {
+
+                } else if (proyectilView.impactoInvasor()) {
+
+                } else if (proyectilView.impactoNave()) {
+
+                }
+            } else {
+                // Si no impactó, lo muevo
+                uiProyectil.mover(proyectilView.getX(), proyectilView.getY());
+                System.out.println("Proyectil: " + proyectilView.getX() + " " + proyectilView.getY());
             }
         }
     }
