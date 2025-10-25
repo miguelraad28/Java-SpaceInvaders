@@ -23,7 +23,7 @@ public class Invasor {
 
   private Area areaJuego;
 
-  public Invasor(int invasorId,int x, int y, int ancho, int alto, int velocidad,
+  public Invasor(int x, int y, int ancho, int alto, int velocidad,
       int probabilidadDisparar, int tiempoRecarga, Area areaJuego) {
     this.invasorId = invId++;
     this.x = x;
