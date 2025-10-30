@@ -1,28 +1,29 @@
 package views;
 
 public class NaveView extends ObjetoImpactado {
+    private int naveID;
     private int ancho;
     private int alto;
-    private int vidas;
+    private static int vidas;
 
     public NaveView(int naveID, int x, int y, float vida) {
         super(naveID, x, y);
         this.ancho = 50; // Ancho por defecto
         this.alto = 50;  // Alto por defecto
-        this.vidas = 3;  // Vidas por defecto
+        int vidas = 3;  // Vidas por defecto
         super.setVida(vida);
     }
 
-    public NaveView(int naveID, int x, int y, int ancho, int alto, float vida, int vidas) {
+    public NaveView(int naveID, int x, int y, int ancho, int alto, int vida, int vidas) {
         super(naveID, x, y);
         this.ancho = ancho;
         this.alto = alto;
-        this.vidas = vidas;
+        NaveView.vidas = vidas;
         super.setVida(vida);
     }
 
     public int getNaveID() {
-        return super.getId();
+        return 0;
     }
 
     public int getAncho() {
@@ -33,7 +34,7 @@ public class NaveView extends ObjetoImpactado {
         return alto;
     }
 
-    public int getVidas() {
+    public static int getVidas() {
         return vidas;
     }
 
@@ -46,13 +47,15 @@ public class NaveView extends ObjetoImpactado {
     }
 
     public void setVidas(int vidas) {
-        this.vidas = vidas;
+        NaveView.vidas = vidas;
     }
 
-    public void reducirVida() {
+    public static int reducirVida() {
         if (vidas > 0) {
             vidas--;
+            return vidas;
         }
+        return vidas;
     }
 
     @Override

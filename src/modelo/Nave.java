@@ -1,6 +1,6 @@
 package modelo;
 
-import gui.ImagenNave;
+import views.NaveView;
 
 import java.util.Optional;
 
@@ -66,10 +66,12 @@ public class Nave {
         return new Proyectil(px, py, velocidadProyectil, true);
     }
 
-    public Optional<Nave> hayColision(Proyectil proyectil) {
+    public Optional<NaveView> hayColision(Proyectil proyectil) {
 
         if (proyectil == null) return null;
         if (proyectil.esDelJugador()) return null;
+
+        int id = 0;
 
         int px = proyectil.getX();
         int py = proyectil.getY();
@@ -80,7 +82,8 @@ public class Nave {
         boolean colisionY = py < this.y + this.alto && py + pAlto > this.y;
 
         if (colisionX && colisionY) {
-            return new NaveView(id);
+            int vidas = NaveView.reducirVida();
+            return Optional.of(new NaveView(id, px, py, 0));
         }
         return null;
     }

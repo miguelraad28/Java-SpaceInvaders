@@ -4,6 +4,8 @@
  */
 package modelo;
 
+import views.InvasorView;
+
 import java.util.Optional;
 
 public class Invasor {
@@ -20,11 +22,12 @@ public class Invasor {
   private int probabilidadDisparar;
   private int tiempoDesdeUltDisparo;
   private int tiempoRecarga;
+  private String tipoInvasor;
 
   private Area areaJuego;
 
   public Invasor(int x, int y, int ancho, int alto, int velocidad,
-      int probabilidadDisparar, int tiempoRecarga, Area areaJuego) {
+      int probabilidadDisparar, int tiempoRecarga, Area areaJuego, String tipoInvasor) {
     this.invasorId = invId++;
     this.x = x;
     this.y = y;
@@ -35,6 +38,7 @@ public class Invasor {
     this.tiempoRecarga = tiempoRecarga;
     this.tiempoDesdeUltDisparo = tiempoRecarga;
     this.areaJuego = areaJuego;
+    this.tipoInvasor = tipoInvasor;
   }
 
   public static void cambiarDireccion() {
@@ -59,6 +63,14 @@ public class Invasor {
 
   public int getAlto() {
     return this.alto;
+  }
+
+  public String getTipoInvasor() {
+    return this.tipoInvasor;
+  }
+
+  public void setTipoInvasor(String tipoInvasor) {
+    this.tipoInvasor = "Basico";
   }
 
   public void actualizarCooldownInvasor() {
@@ -114,7 +126,7 @@ public class Invasor {
     return null;
   }
 
-  public Optional<Invasor> hayColision(Proyectil proyectil){
+  public Optional<InvasorView> hayColision(Proyectil proyectil){
 
     if (proyectil == null) return null;
     if (!proyectil.esDelJugador()) return null;
@@ -128,7 +140,7 @@ public class Invasor {
     boolean colisionY = py < this.y + this.alto && py + pAlto > this.y;
 
     if (colisionY && colisionX) {
-      return new InvasorView(invasorId, this.x, this.y);
+      return Optional.of(new InvasorView(invasorId, this.x, this.y, this.tipoInvasor));
     }
     return null;
   }

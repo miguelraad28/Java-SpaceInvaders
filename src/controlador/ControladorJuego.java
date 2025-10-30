@@ -18,6 +18,7 @@ import modelo.Juego;
 import modelo.Muro;
 import modelo.Nave;
 import modelo.Proyectil;
+import views.NaveView;
 
 /**
  *
@@ -65,7 +66,7 @@ public class ControladorJuego {
         juego.iniciar();
     }
 
-    public boolean hayColisionConNave(Proyectil proyectil) {
+    public Optional<NaveView> hayColisionConNave(Proyectil proyectil) {
         return this.nave.hayColision(proyectil);
     }
 
