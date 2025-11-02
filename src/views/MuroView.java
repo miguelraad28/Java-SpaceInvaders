@@ -29,14 +29,4 @@ public class MuroView extends ObjetoImpactado {
   public float getVida() {
     return vida;
   }
-
-  @Override
-  public boolean estaDestruido() {
-    return getVida() <= 0;
-  }
-
-  @Override
-  public String getTipo() {
-    return "Muro";
-  }
 }

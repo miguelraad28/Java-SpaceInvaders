@@ -45,8 +45,4 @@ public abstract class ObjetoImpactado {
     public void setVida(float vida) {
         this.vida = vida;
     }
-
-    // Métodos abstractos que deben implementar las clases hijas
-    public abstract boolean estaDestruido();
-    public abstract String getTipo();
 }

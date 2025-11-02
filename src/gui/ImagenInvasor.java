@@ -5,10 +5,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class ImagenInvasor extends JLabel{
+    private final int invasorID;
     private final int ancho;
     private final int alto;
 
-    public ImagenInvasor(){
+    public ImagenInvasor(int invasorID){
+        this.invasorID = invasorID;
         ancho = 53;
         alto = 39;
 
@@ -21,6 +23,10 @@ public class ImagenInvasor extends JLabel{
         setIcon(imagenIcono);
     }
 
+    public int getInvasorID(){
+        return invasorID;
+    }
+
     public int getAncho(){
         return ancho;
     }
@@ -29,7 +35,7 @@ public class ImagenInvasor extends JLabel{
     }
 
     public void mover(int x, int y){
-        System.out.println("Mover X: " + x + " Y: " + y);
+        // System.out.println("Mover X: " + x + " Y: " + y);
         setBounds(x, y, ancho, alto);
     }
 }

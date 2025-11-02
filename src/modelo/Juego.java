@@ -37,6 +37,11 @@ public class Juego {
         this.enCurso = true;
     }
 
+
+    public void sumarPuntaje(int puntaje) {
+        this.puntaje += puntaje;
+    }
+
     public boolean estoyEnCurso() {
         return this.enCurso;
     }

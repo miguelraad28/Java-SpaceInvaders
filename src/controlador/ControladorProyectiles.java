@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import modelo.Area;
 import modelo.Proyectil;
+import views.InvasorView;
 import views.MuroView;
+import views.NaveView;
 import views.ObjetoImpactado;
 import views.ProyectilView;
 
@@ -69,24 +71,28 @@ public class ControladorProyectiles {
             return Optional.of(muroView.get());
         }
 
-        //TODO ELIMINAR
-        return Optional.empty();
+        if (proyectil.esDelJugador()) {
+            // return Optional.empty();
 
-        // if (proyectil.esDelJugador()) {
+            Optional<InvasorView> invasorView = ControladorInvasores.getInstancia(areaJuego)
+                    .hayColisionConInvasor(proyectil);
 
-        // if(ControladorInvasores.getInstancia(areaJuego).hayColisionConInvasor(proyectil)){
-        // return true;
-        // }
+            if (invasorView.isPresent()) {
 
-        // return false;
-        // } else {
-        // // Ver si hay muro o nave
-        // if(ControladorJuego.getInstancia(areaJuego).hayColisionConNave(proyectil)){
-        // return true;
-        // }
+                return Optional.of(invasorView.get());
+            }
+            
+            return Optional.empty();
+        } else {
+            // Ver si hay muro o nave
+            Optional<NaveView> naveView = ControladorJuego.getInstancia(areaJuego).hayColisionConNave(proyectil);
 
-        // return false;
-        // }
+            if (naveView.isPresent()) {
+                return Optional.of(naveView.get());
+            }
+
+            return Optional.empty();
+        }
     }
 
     private void eliminarProyectil(Proyectil p) {

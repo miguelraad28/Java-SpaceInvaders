@@ -35,7 +35,8 @@ public class Nave {
 
     public int moverIzquierda() {
         this.x -= this.velocidad;
-        if (this.x < 0) this.x = 0;
+        if (this.x < 0)
+            this.x = 0;
         return this.x;
     }
 
@@ -54,37 +55,31 @@ public class Nave {
     }
 
     //
-    public Proyectil intentarDisparo() {
-        if (!puedeDisparar()) return null;
+    public Optional<Proyectil> intentarDisparo() {
+        if (!puedeDisparar())
+            return Optional.empty();
         tiempoDesdeUltDisparo = 0;
-
 
         int px = this.x + this.ancho / 2;
         int py = this.y;
         int velocidadProyectil = 4;
 
-        return new Proyectil(px, py, velocidadProyectil, true);
+        return Optional.of(new Proyectil(px, py, velocidadProyectil, true));
     }
 
     public Optional<NaveView> hayColision(Proyectil proyectil) {
-
-        if (proyectil == null) return null;
-        if (proyectil.esDelJugador()) return null;
-
-        int id = 0;
-
         int px = proyectil.getX();
         int py = proyectil.getY();
         int pAncho = proyectil.getAncho();
         int pAlto = proyectil.getAlto();
 
-        boolean colisionX = px < this.x + this.ancho && px + pAncho > this.x;
-        boolean colisionY = py < this.y + this.alto && py + pAlto > this.y;
+        boolean colisionX = px + pAncho >= this.x && px <= this.x + this.ancho;
+        boolean colisionY = py + pAlto >= this.y;
 
         if (colisionX && colisionY) {
-            int vidas = NaveView.reducirVida();
-            return Optional.of(new NaveView(id, px, py, 0));
+            return Optional.of(new NaveView(0, px, py));
         }
-        return null;
+
+        return Optional.empty();
     }
 }

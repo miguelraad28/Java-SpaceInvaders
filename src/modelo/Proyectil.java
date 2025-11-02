@@ -65,7 +65,7 @@ public class Proyectil {
     public boolean estoyEnLimites (Area areaJuego) {
         // Sale por límite superior
         if(this.y + this.alto < 0){
-            System.out.println("Salí por arriba");
+            // System.out.println("Salí por arriba");
             return false;
         }else if(this.y > areaJuego.getAlto()){
             // Sale por límite inferior

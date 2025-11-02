@@ -29,7 +29,7 @@ public class ImagenNave extends JLabel{
     }
 
     public void mover(int x, int y){
-        System.out.println("Mover X: " + x + " Y: " + y);
+        // System.out.println("Mover X: " + x + " Y: " + y);
         setBounds(x, y, ancho, alto);
     }
 }

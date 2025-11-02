@@ -17,13 +17,13 @@ public class Muro {
     /**
      * Constructor para crear un nuevo Muro.
      */
-    public Muro(int x, int y, int ancho, int alto, float vida) {
+    public Muro(int x, int y, int ancho, int alto) {
         this.MuroID = numeradorID++;
         this.ancho = ancho;
         this.alto = alto;
         this.x = x;
         this.y = y;
-        this.vida = vida;
+        this.vida = 1.00f;
     }
 
     public int getMuroID() {
@@ -50,35 +50,35 @@ public class Muro {
         return this.vida;
     }
 
-    private void setVida(float vida) {
-        if (vida > 0) {
-            this.vida = vida;
-        }
-    }
-
-    public boolean estoyRoto() {
-        return vida == 0;
-    }
-
     private void impactadoPorJugador() {
-        vida = (float) (this.vida - 0.05);
+        this.vida = (float) (this.vida - 0.05);
     }
 
     private void impactadoPorInvasor() {
-        vida = (float) (this.vida - 0.1);
+        this.vida = (float) (this.vida - 0.1);
     }
 
     public Optional<MuroView> hayColision(Proyectil p) {
-        System.out.println("Es del jugador: " + p.esDelJugador());
-        if (p.esDelJugador() && p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho()
-                && p.getY() <= this.getY() + this.getAlto()) {
+
+        int px = p.getX();
+        int py = p.getY();
+        int pAncho = p.getAncho();
+        int pAlto = p.getAlto();
+        // System.out.println("Es del jugador: " + p.esDelJugador());
+        if (p.esDelJugador() && px >= this.getX() && px <= this.getX() + this.getAncho()
+                && py <= this.getY() + this.getAlto()) {
+
             this.impactadoPorJugador();
+
             return Optional.of(new MuroView(this.getMuroID(), this.getX(), this.getY(), this.getVida()));
-        } else if (!p.esDelJugador() && p.getX() >= this.getX() && p.getX() <= this.getX() + this.getAncho()
-                && p.getY() + p.getAlto() >= this.getY()) {
+        } else if (!p.esDelJugador() && px + pAncho >= this.getX() && px <= this.getX() + this.getAncho()
+                && py + pAlto >= this.getY()) {
+
             this.impactadoPorInvasor();
+
             return Optional.of(new MuroView(this.getMuroID(), this.getX(), this.getY(), this.getVida()));
         }
+
         return Optional.empty();
     }
 }

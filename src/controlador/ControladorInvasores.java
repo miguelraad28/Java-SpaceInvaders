@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import modelo.Area;
 import modelo.Dificultad;
 import modelo.Invasor;
 import modelo.Proyectil;
+import views.InvasorView;
 
 public class ControladorInvasores {
 
     private static ControladorInvasores instancia;
     private Area areaJuego;
     private List<Invasor> invasores;
+    private int direccion = 1;
 
     private ControladorInvasores(Area areaJuego) {
         this.areaJuego = areaJuego;
@@ -27,42 +30,33 @@ public class ControladorInvasores {
         return instancia;
     }
 
-    public boolean hayColisionConInvasor(Proyectil proyectil) {
-        for (Invasor invasor : invasores) {
-            // Verificar colisión usando coordenadas
-            int px = proyectil.getX();
-            int py = proyectil.getY();
-            int pw = proyectil.getAncho();
-            int ph = proyectil.getAlto();
-
-            int ix = invasor.getX();
-            int iy = invasor.getY();
-            int iw = invasor.getAncho();
-            int ih = invasor.getAlto();
-
-            // Verificar si hay intersección
-            if (px < ix + iw && px + pw > ix &&
-                    py < iy + ih && py + ph > iy) {
-                // Colisión detectada, destruir invasor
+    public Optional<InvasorView> hayColisionConInvasor(Proyectil proyectil) {
+        for (int i = 0; i < invasores.size(); i++) {
+            Invasor invasor = invasores.get(i);
+            // Revisa si hay colisión por c/u
+            Optional<InvasorView> invasorView = invasor.hayColision(proyectil);
+            // Como un proyectil solo puede colisionar con 1 cosa a la vez
+            // si hay colision, eliminamos y retornamos inmediatamente
+            if (invasorView.isPresent()) {
                 this.invasores.remove(invasor);
-                return true;
+                return invasorView;
             }
         }
-        return false;
+
+        return Optional.empty();
     }
 
-    public int[][] iniciarInvasores(Dificultad dificultad) {
-        int[][] posiciones = new int[15][2];
+    public List<InvasorView> iniciarInvasores(Dificultad dificultad) {
+        List<InvasorView> invasorViews = new ArrayList<>();
 
         int filas = 3;
         int columnas = 5;
         int separacionHorizontal = 20; // espacio entre invasores en X
         int separacionVertical = 20; // espacio entre invasores en Y
-        String tipoInvasor = "Basico";
         int anchoInvasor = 53;
         int altoInvasor = 39;
         int velocidad = dificultad.getVelocidadInvasor();
-        int probabilidadDisparar = dificultad.getProbabilidadDisparoInvasor();
+        float probabilidadDisparar = dificultad.getProbabilidadDisparoInvasor();
         int tiempoRecarga = dificultad.getTiempoRecargaInvasor();
 
         int anchoGrid = columnas * anchoInvasor + (columnas - 1) * separacionHorizontal;
@@ -75,38 +69,60 @@ public class ControladorInvasores {
                 int x = inicioX + col * (anchoInvasor + separacionHorizontal);
                 int y = inicioY + fila * (altoInvasor + separacionVertical);
                 Invasor invasor = new Invasor(x, y, anchoInvasor, altoInvasor, velocidad, probabilidadDisparar,
-                        tiempoRecarga, areaJuego, tipoInvasor);
+                        tiempoRecarga, areaJuego);
 
-                posiciones[fila * columnas + col][0] = x;
-                posiciones[fila * columnas + col][1] = y;
+                invasorViews.add(new InvasorView(invasor.getInvasorID(), x, y));
                 invasores.add(invasor);
             }
         }
 
-        return posiciones;
+        return invasorViews;
     }
 
-    public void moverInvasores() {
+    public List<InvasorView> moverInvasores() {
+        List<InvasorView> invasorViews = new ArrayList<>();
+
         boolean necesitoCambiarDireccion = false;
 
         for (int i = 0; i < this.invasores.size(); i++) {
             Invasor invasor = this.invasores.get(i);
 
-            int[] resultado = invasor.mover();
+            InvasorView invasorView = invasor.mover(this.direccion);
 
-            if (resultado[2] == 1) {
-                necesitoCambiarDireccion = true;
+            if (this.direccion == 1) {
+                if (invasorView.getX() + invasorView.getAncho() >= areaJuego.getAncho()) {
+                    necesitoCambiarDireccion = true;
+                }
+            } else {
+                if (invasorView.getX() <= 0) {
+                    necesitoCambiarDireccion = true;
+                }
             }
+
+            invasorViews.add(invasorView);
         }
 
         // Cambiamos direccion si es necesario
         // para el próximo tick.
         if (necesitoCambiarDireccion) {
-            Invasor.cambiarDireccion();
+            this.cambiarDireccion();
+
+            int variacionDeAltura = 10;
+
             for (Invasor invasor : invasores) {
-                invasor.setY(invasor.getY() + 10);
+                invasor.setY(invasor.getY() + variacionDeAltura);
+            }
+
+            for (InvasorView invasorView : invasorViews) {
+                invasorView.setY(invasorView.getY() + variacionDeAltura);
             }
         }
+
+        return invasorViews;
+    }
+
+    private void cambiarDireccion() {
+        this.direccion = -1 * this.direccion;
     }
 
     public Map<Integer, int[]> disparoDeInvasores() {

@@ -11,11 +11,13 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import modelo.Area;
 import modelo.Dificultad;
+import views.InvasorView;
 import views.MuroView;
 import views.ProyectilView;
 
@@ -62,12 +64,13 @@ public class PanelJuego extends JPanel {
                     nuevoXNave = ControladorJuego.getInstancia(areaJuego).moverNaveDerecha();
                     imagenNave.mover(nuevoXNave, imagenNave.getY());
                 } else if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == 32) { // Espacio
-                    int[] proyectil = ControladorJuego.getInstancia(areaJuego).disparar();
+                    Optional<ProyectilView> proyectil = ControladorJuego.getInstancia(areaJuego).disparar();
 
-                    if (proyectil != null) {
-                        System.out.println("Proyectil: " + proyectil[0] + " " + proyectil[1] + " " + proyectil[2]);
-                        UIProyectil uiProyectil = new UIProyectil(proyectil[0], true);
-                        uiProyectil.mover(proyectil[1], proyectil[2]);
+                    if (proyectil.isPresent()) {
+                        ProyectilView proyectilView = proyectil.get();
+
+                        UIProyectil uiProyectil = new UIProyectil(proyectilView.getProyectilID(), true);
+                        uiProyectil.mover(proyectilView.getX(), proyectilView.getY());
                         uiProyectiles.add(uiProyectil);
                         add(uiProyectil);
                     }
@@ -75,7 +78,8 @@ public class PanelJuego extends JPanel {
             }
         });
 
-        // TODO: Hacer que iniciar invasores sea como iniciarMuros, que sea con INvasorView
+        // TODO: Hacer que iniciar invasores sea como iniciarMuros, que sea con
+        // INvasorView
         iniciarInvasores(dificultad);
 
         iniciarMuros();
@@ -86,11 +90,11 @@ public class PanelJuego extends JPanel {
     }
 
     private void iniciarInvasores(Dificultad dificultad) {
-        int[][] posiciones = ControladorInvasores.getInstancia(areaJuego).iniciarInvasores(dificultad);
+        List<InvasorView> invasorViews = ControladorInvasores.getInstancia(areaJuego).iniciarInvasores(dificultad);
 
-        for (int[] posicion : posiciones) {
-            ImagenInvasor invasor = new ImagenInvasor();
-            invasor.mover(posicion[0], posicion[1]);
+        for (InvasorView invasorView : invasorViews) {
+            ImagenInvasor invasor = new ImagenInvasor(invasorView.getInvasorID());
+            invasor.mover(invasorView.getX(), invasorView.getY());
             uiInvasores.add(invasor);
             add(invasor);
         }
@@ -100,7 +104,7 @@ public class PanelJuego extends JPanel {
         List<MuroView> muroViews = ControladorJuego.getInstancia(areaJuego).iniciarMuros();
 
         for (MuroView muroView : muroViews) {
-            ImagenMuro imagenMuro = new ImagenMuro();
+            ImagenMuro imagenMuro = new ImagenMuro(muroView.getMuroID());
             imagenMuro.mover(muroView.getX(), muroView.getY());
             uiMuros.add(imagenMuro);
             add(imagenMuro);
@@ -158,7 +162,7 @@ public class PanelJuego extends JPanel {
         // Iterar hacia atrás para poder eliminar elementos de forma segura
         for (int i = uiProyectiles.size() - 1; i >= 0; i--) {
             UIProyectil uiProyectil = uiProyectiles.get(i);
-            
+
             // Buscar el ProyectilView correspondiente por ID
             ProyectilView proyectilView = null;
             for (ProyectilView pv : proyectilesView) {
@@ -181,22 +185,67 @@ public class PanelJuego extends JPanel {
                 remove(uiProyectil);
 
                 if (proyectilView.impactoMuro()) {
-
+                    
+                    MuroView muroView = proyectilView.getMuroImpactado().get();
+                    
+                    // Iterar hacia atrás para poder eliminar elementos de forma segura
+                    for (int j = uiMuros.size() - 1; j >= 0; j--) {
+                        ImagenMuro imagenMuro = uiMuros.get(j);
+                        if (imagenMuro.getMuroID() == muroView.getMuroID()) {
+                            // Si la vida llegó a 0 o menos, eliminar el muro de la UI
+                            if (muroView.getVida() <= 0) {
+                                uiMuros.remove(imagenMuro);
+                                remove(imagenMuro);
+                            } else {
+                                // Actualizar la vida del muro en la UI
+                                imagenMuro.setVida(muroView.getVida());
+                            }
+                            break;
+                        }
+                    }
                 } else if (proyectilView.impactoInvasor()) {
+                    InvasorView invasorView = proyectilView.getInvasorImpactado().get();
+                    
+                    // Iterar hacia atrás para poder eliminar elementos de forma segura
+                    for (int j = uiInvasores.size() - 1; j >= 0; j--) {
+                        ImagenInvasor imagenInvasor = uiInvasores.get(j);
+                        if (imagenInvasor.getInvasorID() == invasorView.getInvasorID()) {
+                            uiInvasores.remove(imagenInvasor);
+                            remove(imagenInvasor);
+                            break;
+                        }
+                    }
 
+                    ControladorJuego.getInstancia(areaJuego).sumarPuntaje(10);
+                    lblPuntaje.setText("Puntaje: " + ControladorJuego.getInstancia(areaJuego).obtenerPuntaje());
                 } else if (proyectilView.impactoNave()) {
 
+                    ControladorJuego.getInstancia(areaJuego).quitarVida();
+                    lblVidas.setText("Vidas: " + ControladorJuego.getInstancia(areaJuego).obtenerVidas());
+                    if (ControladorJuego.getInstancia(areaJuego).obtenerVidas() <= 0) {
+                        detenerCicloJuego();
+                        // ventanaPrincipal.mostrarVentanaGameOver();
+                    }
                 }
             } else {
                 // Si no impactó, lo muevo
                 uiProyectil.mover(proyectilView.getX(), proyectilView.getY());
-                System.out.println("Proyectil: " + proyectilView.getX() + " " + proyectilView.getY());
+                // System.out.println("Proyectil: " + proyectilView.getX() + " " + proyectilView.getY());
             }
         }
     }
 
     public void actualizarInvasores() {
-        ControladorInvasores.getInstancia(areaJuego).moverInvasores();
+        List<InvasorView> invasorViews = ControladorInvasores.getInstancia(areaJuego).moverInvasores();
+
+        for (ImagenInvasor uiInvasor : uiInvasores) {
+            for (InvasorView invasorView : invasorViews) {
+                if (invasorView.getInvasorID() == uiInvasor.getInvasorID()) {
+                    uiInvasor.mover(invasorView.getX(), invasorView.getY());
+                    break;
+                }
+            }
+        }
     }
 
     public void solicitarFocoNave() {

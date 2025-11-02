@@ -19,6 +19,7 @@ import modelo.Muro;
 import modelo.Nave;
 import modelo.Proyectil;
 import views.NaveView;
+import views.ProyectilView;
 
 /**
  *
@@ -61,7 +62,7 @@ public class ControladorJuego {
     public void iniciarJuego(Dificultad dificultad) {
         gestorCreditos.consumirParaNuevoJuego();
 
-        nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego, 5);
+        nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego, 10);
         juego = new Juego(dificultad);
         juego.iniciar();
     }
@@ -76,7 +77,12 @@ public class ControladorJuego {
             Optional<MuroView> muroView = muro.hayColision(proyectil);
 
             if (muroView.isPresent()) {
-                return muroView;
+                // Si la vida del muro llegó a 0 o menos, eliminarlo de la lista
+                if (muro.getVida() <= 0) {
+                    this.muros.remove(muro);
+                }
+
+                return Optional.of(muroView.get());
             }
 
         }
@@ -91,13 +97,18 @@ public class ControladorJuego {
         return this.nave.moverDerecha();
     }
 
-    public int[] disparar() {
-        Proyectil proyectil = this.nave.intentarDisparo();
-        if (proyectil != null) {
-            ControladorProyectiles.getInstancia(areaJuego).agregarProyectil(proyectil);
-            return new int[] { proyectil.getProyectilID(), proyectil.getX(), proyectil.getY() };
+    public Optional<ProyectilView> disparar() {
+        Optional<Proyectil> proyectil = this.nave.intentarDisparo();
+
+        if (proyectil.isPresent()) {
+            Proyectil proyectilDeNegocio = proyectil.get();
+            ControladorProyectiles.getInstancia(areaJuego).agregarProyectil(proyectilDeNegocio);
+
+            return Optional.of(new ProyectilView(proyectilDeNegocio.getProyectilID(), proyectilDeNegocio.getX(),
+                    proyectilDeNegocio.getY(), null));
         }
-        return null;
+
+        return Optional.empty();
     }
 
     public void actualizarCooldownNave() {
@@ -109,7 +120,6 @@ public class ControladorJuego {
 
         if (this.juego.getVidas() <= 0) {
             // todo:
-            // Mover nave
         }
     }
 
@@ -125,6 +135,10 @@ public class ControladorJuego {
         return this.juego.getPuntaje();
     }
 
+    public void sumarPuntaje(int puntaje) {
+        this.juego.sumarPuntaje(puntaje);
+    }
+
     public List<MuroView> iniciarMuros() {
         List<MuroView> murosView = new ArrayList<>();
 
@@ -138,8 +152,8 @@ public class ControladorJuego {
         // Crear 4 muros distribuidos uniformemente
         int cantidadMuros = 4;
         int anchoMuro = 80; // Ancho de cada muro
-        int altoMuro = 60; // Alto de cada muro
-        int yMuro = altoArea - 200; // Posición Y fija para todos los muros
+        int altoMuro = 20; // Alto de cada muro
+        int yMuro = altoArea - 150; // Posición Y fija para todos los muros
 
         // Calcular espaciado entre muros
         int espacioTotal = anchoArea - (cantidadMuros * anchoMuro);
@@ -150,7 +164,7 @@ public class ControladorJuego {
             int xMuro = espacioEntreMuros + i * (anchoMuro + espacioEntreMuros);
 
             // Crear muro con vida completa
-            Muro muro = new Muro(xMuro, yMuro, anchoMuro, altoMuro, 1.0f);
+            Muro muro = new Muro(xMuro, yMuro, anchoMuro, altoMuro);
             this.muros.add(muro);
 
             // Crear vista del muro
