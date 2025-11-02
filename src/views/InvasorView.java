@@ -5,20 +5,11 @@ public class InvasorView extends ObjetoImpactado {
     private int alto;
     private String tipoInvasor; // Tipo específico de invasor
 
-    public InvasorView(int invasorID, int x, int y, float vida) {
+    public InvasorView(int invasorID, int x, int y, String tipoInvasor) {
         super(invasorID, x, y);
         this.ancho = 40; // Ancho por defecto
         this.alto = 30;  // Alto por defecto
         this.tipoInvasor = "Basico";
-        super.setVida(vida);
-    }
-
-    public InvasorView(int invasorID, int x, int y, int ancho, int alto, float vida, String tipoInvasor) {
-        super(invasorID, x, y);
-        this.ancho = ancho;
-        this.alto = alto;
-        this.tipoInvasor = tipoInvasor;
-        super.setVida(vida);
     }
 
     public int getInvasorID() {

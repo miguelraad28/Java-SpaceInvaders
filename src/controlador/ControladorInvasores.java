@@ -58,7 +58,7 @@ public class ControladorInvasores {
         int columnas = 5;
         int separacionHorizontal = 20; // espacio entre invasores en X
         int separacionVertical = 20; // espacio entre invasores en Y
-
+        String tipoInvasor = "Basico";
         int anchoInvasor = 53;
         int altoInvasor = 39;
         int velocidad = dificultad.getVelocidadInvasor();
@@ -75,7 +75,7 @@ public class ControladorInvasores {
                 int x = inicioX + col * (anchoInvasor + separacionHorizontal);
                 int y = inicioY + fila * (altoInvasor + separacionVertical);
                 Invasor invasor = new Invasor(x, y, anchoInvasor, altoInvasor, velocidad, probabilidadDisparar,
-                        tiempoRecarga, areaJuego);
+                        tiempoRecarga, areaJuego, tipoInvasor);
 
                 posiciones[fila * columnas + col][0] = x;
                 posiciones[fila * columnas + col][1] = y;
