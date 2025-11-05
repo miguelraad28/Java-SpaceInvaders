@@ -185,9 +185,9 @@ public class PanelJuego extends JPanel {
                 remove(uiProyectil);
 
                 if (proyectilView.impactoMuro()) {
-                    
+
                     MuroView muroView = proyectilView.getMuroImpactado().get();
-                    
+
                     // Iterar hacia atrás para poder eliminar elementos de forma segura
                     for (int j = uiMuros.size() - 1; j >= 0; j--) {
                         ImagenMuro imagenMuro = uiMuros.get(j);
@@ -205,7 +205,7 @@ public class PanelJuego extends JPanel {
                     }
                 } else if (proyectilView.impactoInvasor()) {
                     InvasorView invasorView = proyectilView.getInvasorImpactado().get();
-                    
+
                     // Iterar hacia atrás para poder eliminar elementos de forma segura
                     for (int j = uiInvasores.size() - 1; j >= 0; j--) {
                         ImagenInvasor imagenInvasor = uiInvasores.get(j);
@@ -218,21 +218,77 @@ public class PanelJuego extends JPanel {
 
                     ControladorJuego.getInstancia(areaJuego).sumarPuntaje(10);
                     lblPuntaje.setText("Puntaje: " + ControladorJuego.getInstancia(areaJuego).obtenerPuntaje());
+
+                    // Si ya no quedan invasores, avanzamos de nivel
+                    if (uiInvasores.isEmpty()) {
+                        avanzarNivel();
+                        return;
+                    }
                 } else if (proyectilView.impactoNave()) {
 
                     ControladorJuego.getInstancia(areaJuego).quitarVida();
                     lblVidas.setText("Vidas: " + ControladorJuego.getInstancia(areaJuego).obtenerVidas());
                     if (ControladorJuego.getInstancia(areaJuego).obtenerVidas() <= 0) {
                         detenerCicloJuego();
-                        // ventanaPrincipal.mostrarVentanaGameOver();
+                        ventanaPrincipal.mostrarPanelGameOver("Game Over");
                     }
                 }
             } else {
                 // Si no impactó, lo muevo
                 uiProyectil.mover(proyectilView.getX(), proyectilView.getY());
-                // System.out.println("Proyectil: " + proyectilView.getX() + " " + proyectilView.getY());
+                // System.out.println("Proyectil: " + proyectilView.getX() + " " +
+                // proyectilView.getY());
             }
         }
+    }
+
+    private void avanzarNivel() {
+        // Si ya estamos en MAESTRO, cerrar con felicitaciones
+        if (ControladorJuego.getInstancia(areaJuego).getDificultadActual() == Dificultad.MAESTRO) {
+            detenerCicloJuego();
+            ventanaPrincipal.mostrarPanelGameOver("Felicitaciones! Completaste el modo juego");
+            return;
+        }
+
+        // Avanzar dificultad del modelo
+        Dificultad nueva = ControladorJuego.getInstancia(areaJuego).avanzarDificultad();
+
+        // Limpiar proyectiles (modelo + UI)
+        ControladorProyectiles.getInstancia(areaJuego).resetear();
+        for (int i = uiProyectiles.size() - 1; i >= 0; i--) {
+            UIProyectil p = uiProyectiles.get(i);
+            uiProyectiles.remove(p);
+            remove(p);
+        }
+
+        // Limpiar invasores UI y resetear en controlador
+        ControladorInvasores.getInstancia(areaJuego).resetear();
+        for (int i = uiInvasores.size() - 1; i >= 0; i--) {
+            ImagenInvasor inv = uiInvasores.get(i);
+            uiInvasores.remove(inv);
+            remove(inv);
+        }
+
+        // Limpiar muros UI y re-crear (el controlador ya los recrea en iniciarMuros)
+        for (int i = uiMuros.size() - 1; i >= 0; i--) {
+            ImagenMuro m = uiMuros.get(i);
+            uiMuros.remove(m);
+            remove(m);
+        }
+        iniciarMuros();
+
+        // Re-crear invasores según la nueva dificultad
+        iniciarInvasores(nueva);
+
+        // Centrar nave en modelo y UI
+        ControladorJuego.getInstancia(areaJuego).centrarNave();
+        imagenNave.mover((areaJuego.getAncho() - imagenNave.getAncho()) / 2, 500);
+
+        // Actualizar label de dificultad
+        lblDificultad.setText("Dificultad: " + ControladorJuego.getInstancia(areaJuego).obtenerDificultad());
+
+        // revalidate();
+        // repaint();
     }
 
     public void actualizarInvasores() {

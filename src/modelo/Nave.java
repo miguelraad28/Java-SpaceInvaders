@@ -1,8 +1,7 @@
 package modelo;
 
-import views.NaveView;
-
 import java.util.Optional;
+import views.NaveView;
 
 public class Nave {
 
@@ -81,5 +80,10 @@ public class Nave {
         }
 
         return Optional.empty();
+    }
+
+    public void moverACentro() {
+        int nuevoX = (areaJuego.getAncho() - this.ancho) / 2;
+        this.x = nuevoX;
     }
 }

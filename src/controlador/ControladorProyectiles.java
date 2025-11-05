@@ -98,4 +98,8 @@ public class ControladorProyectiles {
     private void eliminarProyectil(Proyectil p) {
         this.proyectiles.remove(p);
     }
+
+    public void resetear() {
+        this.proyectiles.clear();
+    }
 }

@@ -146,4 +146,9 @@ public class ControladorInvasores {
             invasor.actualizarCooldownInvasor();
         }
     }
+
+    public void resetear() {
+        this.invasores.clear();
+        this.direccion = 1;
+    }
 }

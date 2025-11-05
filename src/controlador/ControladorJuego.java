@@ -7,19 +7,18 @@ package controlador;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import modelo.Dificultad;
-
 import modelo.Area;
+import modelo.Dificultad;
 import modelo.GestorCreditos;
-import modelo.Rank;
-import views.MuroView;
 import modelo.Juego;
 import modelo.Muro;
 import modelo.Nave;
 import modelo.Proyectil;
+import modelo.Rank;
+import views.MuroView;
 import views.NaveView;
 import views.ProyectilView;
+import views.RankView;
 
 /**
  *
@@ -41,7 +40,6 @@ public class ControladorJuego {
         this.areaJuego = areaJuego;
         this.gestorCreditos = new GestorCreditos();
         this.ranking = new ArrayList<Rank>();
-        this.muros = new ArrayList<Muro>();
     }
 
     public static ControladorJuego getInstancia(Area areaJuego) {
@@ -62,8 +60,10 @@ public class ControladorJuego {
     public void iniciarJuego(Dificultad dificultad) {
         gestorCreditos.consumirParaNuevoJuego();
 
+        muros = new ArrayList<>();
         nave = new Nave(areaJuego.getAncho() / 2 - 50 / 2, 500, 7, 50, 50, areaJuego, 10);
         juego = new Juego(dificultad);
+
         juego.iniciar();
     }
 
@@ -117,14 +117,14 @@ public class ControladorJuego {
 
     public void quitarVida() {
         this.juego.quitarVida();
-
-        if (this.juego.getVidas() <= 0) {
-            // todo:
-        }
     }
 
     public String obtenerDificultad() {
         return this.juego.getDificultad().name();
+    }
+
+    public Dificultad getDificultadActual() {
+        return this.juego.getDificultad();
     }
 
     public int obtenerVidas() {
@@ -140,10 +140,11 @@ public class ControladorJuego {
     }
 
     public List<MuroView> iniciarMuros() {
-        List<MuroView> murosView = new ArrayList<>();
-
         // Limpiar lista de muros existente
         this.muros.clear();
+
+        List<MuroView> murosView = new ArrayList<>();
+
 
         // Dimensiones del área de juego
         int anchoArea = areaJuego.getAncho();
@@ -177,5 +178,72 @@ public class ControladorJuego {
         }
 
         return murosView;
+    }
+
+    public void registrarPuntaje(String nombre) {
+        int puntajeActual = this.obtenerPuntaje();
+
+        // Buscar si ya existe entrada del jugador
+        Rank existente = null;
+        for (Rank r : ranking) {
+            if (r.soyElRanking(nombre)) {
+                existente = r;
+                break;
+            }
+        }
+
+        if (existente == null) {
+            ranking.add(new Rank(nombre, puntajeActual));
+        } else {
+            existente.actualizarPuntaje(puntajeActual);
+        }
+    }
+
+    public List<RankView> obtenerRanking() {
+        // Devolver una copia ordenada desc por puntaje como RankView
+        List<Rank> copia = new ArrayList<>(ranking);
+        copia.sort((a, b) -> Integer.compare(b.getMayorPuntaje(), a.getMayorPuntaje()));
+        
+        List<RankView> rankingView = new ArrayList<>();
+        for (Rank r : copia) {
+            rankingView.add(new RankView(r.getNombre(), r.getMayorPuntaje()));
+        }
+        return rankingView;
+    }
+
+    public void resetearEstado() {
+        // Limpiar entidades de juego
+        this.muros = null;
+        this.nave = null;
+        this.juego = null;
+        // Limpiar controladores dependientes
+        ControladorInvasores.getInstancia(areaJuego).resetear();
+        ControladorProyectiles.getInstancia(areaJuego).resetear();
+    }
+
+    public void centrarNave() {
+        if (this.nave != null) {
+            this.nave.moverACentro();
+        }
+    }
+
+    public Dificultad avanzarDificultad() {
+        if (this.juego == null) return Dificultad.CADETE;
+
+        Dificultad actual = this.juego.getDificultad();
+        Dificultad siguiente;
+        // Para maestro (que termina el juego)
+        // lo evalua la UI
+        switch (actual) {
+            case CADETE:
+                siguiente = Dificultad.GUERRERO;
+                break;
+            case GUERRERO:
+            default:
+                siguiente = Dificultad.MAESTRO;
+                break;
+        }
+        this.juego.siguienteNivel(siguiente);
+        return siguiente;
     }
 }

@@ -33,13 +33,27 @@ public class Juego {
         return this.dificultad;
     }
 
+    public void siguienteNivel(Dificultad dificultad) {
+        this.dificultad = dificultad;
+        this.sumarPuntaje(200);
+    }
+
     public void iniciar() {
         this.enCurso = true;
     }
 
 
     public void sumarPuntaje(int puntaje) {
+        int puntajePrevio = this.puntaje;
+
         this.puntaje += puntaje;
+
+        // Cada 500 puntos se otorga 1 vida extra
+        int puntajeViejo = puntajePrevio / 500;
+        int puntajeNuevo = this.puntaje / 500;
+        if (puntajeNuevo > puntajeViejo) {
+            sumarVidas();
+        }
     }
 
     public boolean estoyEnCurso() {
@@ -50,4 +64,7 @@ public class Juego {
         this.vidas--;
     }
 
+    private void sumarVidas() {
+        this.vidas++;
+    }
 }

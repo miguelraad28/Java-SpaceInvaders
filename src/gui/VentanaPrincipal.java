@@ -128,6 +128,23 @@ public class VentanaPrincipal extends JFrame {
         panelJuego.solicitarFocoNave();
     }
 
+    public void mostrarPanelGameOver(String mensaje) {
+        contenedor = this.getContentPane();
+        contenedor.removeAll();
+
+        PanelGameOver panelGameOver = new PanelGameOver(this, mensaje);
+        contenedor.setLayout(new BorderLayout());
+        contenedor.add(panelGameOver, BorderLayout.CENTER);
+
+        contenedor.revalidate();
+        contenedor.repaint();
+        panelGameOver.requestFocusInWindow();
+    }
+
+    public Area getAreaJuego() {
+        return this.areaJuego;
+    }
+
     public void mostrarPanelRanking() {
         contenedor.removeAll();
 
