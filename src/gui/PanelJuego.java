@@ -121,8 +121,6 @@ public class PanelJuego extends JPanel {
 
                 disparoDeInvasores();
 
-                revalidate(); 
-                repaint();
             }
         });
 
