@@ -77,6 +77,10 @@ public class VentanaPrincipal extends JFrame {
         btnCargarCreditos.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (txtCargarCreditos.getText().isEmpty() || txtCargarCreditos.getText().matches(".*[a-zA-Z].*")
+                        || Integer.parseInt(txtCargarCreditos.getText()) <= 0){
+                    mostrarMensaje("Cargar creditos validos, deben ser numeros positivos");
+                }
                 ControladorJuego.getInstancia(areaJuego).cargar(Integer.parseInt(txtCargarCreditos.getText()));
                 txtCargarCreditos.setText("");
                 mostrarPanelInicial();
