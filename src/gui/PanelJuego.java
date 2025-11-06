@@ -78,8 +78,6 @@ public class PanelJuego extends JPanel {
             }
         });
 
-        // TODO: Hacer que iniciar invasores sea como iniciarMuros, que sea con
-        // INvasorView
         iniciarInvasores(dificultad);
 
         iniciarMuros();
@@ -123,7 +121,7 @@ public class PanelJuego extends JPanel {
 
                 disparoDeInvasores();
 
-                revalidate();
+                revalidate(); 
                 repaint();
             }
         });
@@ -286,9 +284,6 @@ public class PanelJuego extends JPanel {
 
         // Actualizar label de dificultad
         lblDificultad.setText("Dificultad: " + ControladorJuego.getInstancia(areaJuego).obtenerDificultad());
-
-        // revalidate();
-        // repaint();
     }
 
     public void actualizarInvasores() {
@@ -298,6 +293,15 @@ public class PanelJuego extends JPanel {
             for (InvasorView invasorView : invasorViews) {
                 if (invasorView.getInvasorID() == uiInvasor.getInvasorID()) {
                     uiInvasor.mover(invasorView.getX(), invasorView.getY());
+
+                    // Termina juego porque llegan a altura de muros
+                    // (Aunque no haya muros vivos)
+                    if(invasorView.getY() + invasorView.getAlto() >= areaJuego.getAlto() - 150){
+                        detenerCicloJuego();
+                        ventanaPrincipal.mostrarPanelGameOver("Game Over");
+                        return;
+                    }
+
                     break;
                 }
             }
