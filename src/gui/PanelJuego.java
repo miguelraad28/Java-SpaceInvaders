@@ -10,7 +10,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -145,10 +144,11 @@ public class PanelJuego extends JPanel {
     }
 
     private void disparoDeInvasores() {
-        Map<Integer, int[]> proyectilesMap = ControladorInvasores.getInstancia(areaJuego).disparoDeInvasores();
-        for (Map.Entry<Integer, int[]> entry : proyectilesMap.entrySet()) {
-            UIProyectil uiProyectil = new UIProyectil(entry.getKey(), false);
-            uiProyectil.mover(entry.getValue()[0], entry.getValue()[1]);
+        List<ProyectilView> proyectilesView = ControladorInvasores.getInstancia(areaJuego).disparoDeInvasores();
+        
+        for (ProyectilView proyectilView : proyectilesView) {
+            UIProyectil uiProyectil = new UIProyectil(proyectilView.getProyectilID(), false);
+            uiProyectil.mover(proyectilView.getX(), proyectilView.getY());
             uiProyectiles.add(uiProyectil);
             add(uiProyectil);
         }

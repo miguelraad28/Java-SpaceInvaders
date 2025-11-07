@@ -4,9 +4,8 @@
  */
 package modelo;
 
-import views.InvasorView;
-
 import java.util.Optional;
+import views.InvasorView;
 
 public class Invasor {
   private static int invId = 0;
@@ -88,9 +87,9 @@ public class Invasor {
     return tiempoDesdeUltDisparo >= tiempoRecarga;
   }
 
-  public Proyectil disparar() {
+  public Optional<Proyectil> disparar() {
     if (!puedoDisparar())
-      return null;
+      return Optional.empty();
 
     float random = (float) (Math.random() * 100);
     if (random < probabilidadDisparar) {
@@ -100,9 +99,9 @@ public class Invasor {
       int py = y + alto;
       int velocidadProyectil = 4;
 
-      return new Proyectil(px, py, velocidadProyectil, false);
+      return Optional.of(new Proyectil(px, py, velocidadProyectil, false));
     }
-    return null;
+    return Optional.empty();
   }
 
 

@@ -1,15 +1,14 @@
 package controlador;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import modelo.Area;
 import modelo.Dificultad;
 import modelo.Invasor;
 import modelo.Proyectil;
 import views.InvasorView;
+import views.ProyectilView;
 
 public class ControladorInvasores {
 
@@ -125,19 +124,28 @@ public class ControladorInvasores {
         this.direccion = -1 * this.direccion;
     }
 
-    public Map<Integer, int[]> disparoDeInvasores() {
-        Map<Integer, int[]> proyectilesMap = new HashMap<>();
+    public List<ProyectilView> disparoDeInvasores() {
+        List<ProyectilView> proyectilesView = new ArrayList<>();
 
         for (int i = 0; i < this.invasores.size(); i++) {
             Invasor invasor = this.invasores.get(i);
-            Proyectil proyectil = invasor.disparar();
-            if (proyectil != null) {
+            
+            Optional<Proyectil> proyectilOpt = invasor.disparar();
+
+            // Si el invasor disparó, agregamos el proyectil a la lista de proyectiles
+            if (proyectilOpt.isPresent()) {
+                Proyectil proyectil = proyectilOpt.get();
+
                 ControladorProyectiles.getInstancia(areaJuego).agregarProyectil(proyectil);
-                proyectilesMap.put(proyectil.getProyectilID(), new int[] { proyectil.getX(), proyectil.getY() });
+
+                ProyectilView proyectilView = new ProyectilView(proyectil.getProyectilID(), 
+                        proyectil.getX(), proyectil.getY(), Optional.empty());
+
+                proyectilesView.add(proyectilView);
             }
         }
 
-        return proyectilesMap;
+        return proyectilesView;
     }
 
     public void actualizarCooldownInvasor() {
